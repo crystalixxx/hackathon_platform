@@ -1,0 +1,12 @@
+name: testing
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+      - name: Ruff installation
+        run: curl -LsSf https://astral.sh/ruff/install.sh | sh
+      - name: lint running
+        run: ruff check
