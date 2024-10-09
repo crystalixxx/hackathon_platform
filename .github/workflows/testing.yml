@@ -9,4 +9,4 @@ jobs:
       - name: Ruff installation
         run: curl -LsSf https://astral.sh/ruff/install.sh | sh
       - name: lint running
-        run: ruff check
+        run: ruff check --fix
