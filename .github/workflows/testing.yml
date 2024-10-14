@@ -6,19 +6,26 @@ jobs:
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
+
       - name: Ruff installation
         run: curl -LsSf https://astral.sh/ruff/install.sh | sh
+
       - name: lint running
         run: ruff check
+
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install poetry
           poetry install
         working-directory: ./backend
+
       - name: Testing
-        run: pytest backend/tests
+        run: |
+          pytest backend/app/tests
