@@ -2,5 +2,6 @@ import pytest
 
 from backend.app import main
 
-def test_file():
-    assert main.my_function(1) == 0.5
+@pytest.mark.parametrize('test_input', [1, 2, 3])
+def test_file(test_input):
+    assert main.my_function(test_input) == 0.5
