@@ -24,12 +24,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
           poetry install
+          poetry run pip install coverage
         working-directory: ./backend
 
       - name: Testing
         run: |
-          coverage run -m pytest  -v -s
+          poetry run coverage run -m pytest  -v -s
+        working-directory: ./backend/app
 
       - name: Generate Coverage Report
         run: |
-          coverage report -m
+          poetry run coverage report -m
+        working-directory: ./backend/app
