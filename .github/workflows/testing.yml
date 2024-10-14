@@ -21,6 +21,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          python -m venv ../.venv
           python -m pip install --upgrade pip
           pip install poetry
           poetry install
@@ -28,4 +29,5 @@ jobs:
 
       - name: Testing
         run: |
+          source .venv/bin/activate
           pytest backend/app/tests
