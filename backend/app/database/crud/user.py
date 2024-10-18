@@ -1,4 +1,3 @@
-from fastapi import HTTPException
 from database import models, schemas
 from sqlalchemy.orm import Session
 
