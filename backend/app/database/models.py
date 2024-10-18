@@ -7,9 +7,9 @@ from datetime import datetime, timezone
 Base = declarative_base()
 
 
-# Базовая модель
 class BaseModel(Base):
-    __abstract__ = True  # Указывает, что это абстрактный класс
+    __abstract__ = True
+
     id = Column(Integer, primary_key=True, index=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(
@@ -19,13 +19,12 @@ class BaseModel(Base):
     )
 
 
-# Модель для таблицы 'user'
 class User(BaseModel):
     __table_name__ = "user"
 
     email = Column(String, unique=True, index=True, nullable=False)
-    first_name = Column(String)
-    second_name = Column(String)
+    first_name = Column(String, nullable=False)
+    second_name = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
     is_admin = Column(Boolean, default=False)
 
@@ -35,7 +34,6 @@ class User(BaseModel):
     )
 
 
-# Модель для связи 'user_tag'
 class UserTag(Base):
     __table_name__ = "user_tag"
 
@@ -46,18 +44,16 @@ class UserTag(Base):
     tag = relationship("Tag", back_populates="users")
 
 
-# Модель для 'tag'
 class Tag(BaseModel):
     __table_name__ = "tag"
 
     title = Column(String, nullable=False)
-    color = Column(String)
+    color = Column(String, default="#777777")
 
     users = relationship("UserTag", back_populates="tag", lazy="joined")
     tasks = relationship("TaskTag", back_populates="tag", lazy="joined")
 
 
-# Модель для 'hackathon'
 class Hackathon(BaseModel):
     __table_name__ = "hackathon"
 
@@ -76,7 +72,6 @@ class Hackathon(BaseModel):
     status = relationship("HackathonStatus", back_populates="hackathons", lazy="joined")
 
 
-# Модель для связи 'hackathon_task'
 class HackathonTask(Base):
     __table_name__ = "hackathon_task"
 
@@ -87,7 +82,6 @@ class HackathonTask(Base):
     task = relationship("Task", back_populates="hackathons")
 
 
-# Модель для задачи 'task'
 class Task(BaseModel):
     __table_name__ = "task"
 
@@ -98,7 +92,6 @@ class Task(BaseModel):
     tags = relationship("TaskTag", back_populates="task", lazy="joined")
 
 
-# Модель для связи 'task_tag'
 class TaskTag(Base):
     __table_name__ = "task_tag"
 
@@ -109,7 +102,6 @@ class TaskTag(Base):
     tag = relationship("Tag", back_populates="tasks")
 
 
-# Модель для связи 'organizer_hackathon'
 class OrganizerHackathon(Base):
     __table_name__ = "organizer_hackathon"
 
@@ -120,7 +112,6 @@ class OrganizerHackathon(Base):
     hackathon = relationship("Hackathon", back_populates="organizers")
 
 
-# Модель для 'hackathon_type'
 class HackathonType(BaseModel):
     __table_name__ = "hackathon_type"
 
@@ -129,7 +120,6 @@ class HackathonType(BaseModel):
     hackathons = relationship("HackathonTypeLink", back_populates="type", lazy="joined")
 
 
-# Модель для связи 'hackathon_type_link'
 class HackathonTypeLink(Base):
     __table_name__ = "hackathon_type_link"
 
@@ -140,7 +130,6 @@ class HackathonTypeLink(Base):
     type = relationship("HackathonType", back_populates="hackathons")
 
 
-# Модель для 'hackathon_location'
 class HackathonLocation(BaseModel):
     __table_name__ = "hackathon_location"
 
@@ -151,7 +140,6 @@ class HackathonLocation(BaseModel):
     )
 
 
-# Модель для связи 'hackathon_location_link'
 class HackathonLocationLink(Base):
     __table_name__ = "hackathon_location_link"
 
@@ -162,7 +150,6 @@ class HackathonLocationLink(Base):
     location = relationship("HackathonLocation", back_populates="hackathons")
 
 
-# Модель для 'hackathon_status'
 class HackathonStatus(BaseModel):
     __table_name__ = "hackathon_status"
 
@@ -171,7 +158,6 @@ class HackathonStatus(BaseModel):
     hackathons = relationship("Hackathon", back_populates="status", lazy="joined")
 
 
-# Модель для связи 'hackathon_tag'
 class HackathonTag(Base):
     __table_name__ = "hackathon_tag"
 
