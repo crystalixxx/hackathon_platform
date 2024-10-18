@@ -16,6 +16,7 @@ ruff = "^0.6.9"
 coverage = "^7.6.3"
 sqlalchemy = "^2.0.35"
 alembic = "^1.13.3"
+pydantic-settings = "^2.6.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
