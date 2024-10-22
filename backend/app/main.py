@@ -1,6 +1,6 @@
 from pydantic import ValidationError
 import pytest
-from .database.schemas import TagCreate, Tag
+from .database.schemas import TagCreate
 
 
 def test_tag_create():
