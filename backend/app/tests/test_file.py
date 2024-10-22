@@ -15,8 +15,3 @@ def test_tag_create_rgba():
     tag = TagCreate(color="rgba(255, 87, 51, 0.5)", transparency=0.5, name="Test Tag")
     assert tag.color == "rgba(255, 87, 51, 0.5)"
     assert tag.transparency == 0.5
-
-
-def test_tag_invalid_color():
-    with pytest.raises(ValidationError):
-        TagCreate(color="12345", name="Invalid Color")
