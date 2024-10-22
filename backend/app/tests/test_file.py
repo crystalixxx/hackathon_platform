@@ -1,5 +1,3 @@
-from pydantic import ValidationError
-import pytest
 from ..database.schemas import TagCreate
 
 
