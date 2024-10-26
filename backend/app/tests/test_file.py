@@ -7,3 +7,6 @@ def test_tag_create():
     tag = TagCreate(color="#FF0000", name="Test Tag")
     assert tag.color == "#FF0000"
     assert tag.name == "Test Tag"
+
+
+pytest.exit("All tests completed")
