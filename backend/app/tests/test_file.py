@@ -1,7 +1,8 @@
-import pytest
+from ..database.schemas import TagCreate
 
-from backend.app import main
 
-@pytest.mark.parametrize('test_input', [0])
-def test_file(test_input):
-    assert main.my_function(test_input) == 0
+def test_tag_create():
+    """Создает тег"""
+    tag = TagCreate(color="#FF0000", name="Test Tag")
+    assert tag.color == "#FF0000"
+    assert tag.name == "Test Tag"
