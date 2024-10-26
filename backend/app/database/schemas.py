@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+from typing import Optional
+
+from pydantic import BaseModel, HttpUrl
 
 
 class UserBase(BaseModel):
@@ -23,8 +25,7 @@ class User(UserBase):
 
 class TagBase(BaseModel):
     name: str
-    transparency: float = 1.0
-    color: str = "rgba(255, 87, 51, transparency)"
+    color: str = "#000000"
 
 
 class TagCreate(TagBase):
@@ -33,7 +34,6 @@ class TagCreate(TagBase):
 
 class Tag(TagBase):
     id: int
-    users: list[User] = []
 
     class Config:
         orm_mode = True
@@ -43,3 +43,9 @@ class Tag(TagBase):
 class HackathonBase(BaseModel):
     name: str
     description: str
+    status: Optional[int] = None
+    redirect_link: Optional[HttpUrl] = None
+    poster_link: Optional[HttpUrl] = None
+
+    class Config:
+        orm_mode = True
