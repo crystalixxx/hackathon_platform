@@ -1,5 +1,4 @@
 from typing import Optional
-
 from pydantic import BaseModel, HttpUrl
 
 
@@ -16,11 +15,14 @@ class UserCreate(UserBase):
 
 
 class UserEdit(UserBase):
-    password: str | None = None
+    password: Optional[str] = None
 
 
 class User(UserBase):
     id: int
+
+    class Config:
+        from_attributes = True  # заменил orm_mode
 
 
 class TagBase(BaseModel):
@@ -36,8 +38,8 @@ class Tag(TagBase):
     id: int
 
     class Config:
-        orm_mode = True
-        schema_extra = {}
+        from_attributes = True  # заменил orm_mode
+        json_schema_extra = {}  # заменил schema_extra
 
 
 class HackathonBase(BaseModel):
@@ -48,4 +50,4 @@ class HackathonBase(BaseModel):
     poster_link: Optional[HttpUrl] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # заменил orm_mode
