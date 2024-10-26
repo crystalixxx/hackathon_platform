@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, HttpUrl, ConfigDict
 
 
 class UserBase(BaseModel):
@@ -21,8 +21,7 @@ class UserEdit(UserBase):
 class User(UserBase):
     id: int
 
-    class Config:
-        from_attributes = True  # заменил orm_mode
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TagBase(BaseModel):
@@ -37,9 +36,7 @@ class TagCreate(TagBase):
 class Tag(TagBase):
     id: int
 
-    class Config:
-        from_attributes = True  # заменил orm_mode
-        json_schema_extra = {}  # заменил schema_extra
+    model_config = ConfigDict(from_attributes=True, json_schema_extra={})
 
 
 class HackathonBase(BaseModel):
@@ -49,5 +46,4 @@ class HackathonBase(BaseModel):
     redirect_link: Optional[HttpUrl] = None
     poster_link: Optional[HttpUrl] = None
 
-    class Config:
-        from_attributes = True  # заменил orm_mode
+    model_config = ConfigDict(from_attributes=True)
