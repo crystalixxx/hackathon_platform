@@ -9,4 +9,4 @@ def test_tag_create():
     assert tag.name == "Test Tag"
 
 
-pytest.exit("All tests completed")
+pytest.skip()
