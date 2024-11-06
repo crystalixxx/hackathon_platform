@@ -7,7 +7,6 @@ from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Text, DateT
 from sqlalchemy.orm import relationship, Mapped
 from datetime import datetime, timezone
 
-from sqlalchemy.testing.schema import mapped_column
 
 Base = declarative_base()
 
