@@ -7,6 +7,8 @@ from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Text, DateT
 from sqlalchemy.orm import relationship, Mapped
 from datetime import datetime, timezone
 
+from sqlalchemy.testing.schema import mapped_column
+
 Base = declarative_base()
 
 
@@ -105,7 +107,8 @@ class CommonTag(BaseModel):
     title: str = Column(String, nullable=False)
     color: str = Column(String, nullable=False, default="#000000")
 
-    teams: Mapped[Optional[List["Team"]]] = relationship("Team", secondary="TeamCommonTag", back_populates="common_tags")
+    teams: Mapped[Optional[List["Team"]]] = relationship("Team", secondary="TeamCommonTag",
+                                                         back_populates="common_tags")
 
 
 class FieldTag(BaseModel):
@@ -129,3 +132,140 @@ class TeamFieldTag(ManyToManyBase):
 
     team_id: int = Column(Integer, ForeignKey("team.id"), primary_key=True, nullable=False)
     field_tag_id: int = Column(Integer, ForeignKey("field_tag.id"), primary_key=True, nullable=False)
+
+
+class Date(BaseModel):
+    __tablename__ = "date"
+
+    date_start: DateTime = Column(DateTime, nullable=False)
+    date_end: DateTime = Column(DateTime, nullable=False)
+
+
+class Status(BaseModel):
+    __tablename__ = "status"
+
+    title: str = Column(String, nullable=False, unique=True)
+
+    events: Mapped[Optional[List["Event"]]] = relationship("Event", back_populates="status")
+    tracks: Mapped[Optional[List["Track"]]] = relationship("Track", back_populates="status")
+
+
+class Event(BaseModel):
+    __tablename__ = "event"
+
+    title: str = Column(String, nullable=False)
+    description: str = Column(Text, nullable=False)
+    redirect_link: str = Column(String, nullable=False)
+    status_id: int = Column(Integer, ForeignKey("status.id"), nullable=False)
+    date_id: int = Column(Integer, ForeignKey("date.id"), nullable=False)
+
+    date: Mapped["Date"] = relationship("Date")
+    status: Mapped["Status"] = relationship("Status", back_populates="events")
+
+    tracks: Mapped[Optional[List["Track"]]] = relationship("Track", back_populates="event")
+    prizes: Mapped[Optional[List["EventPrize"]]] = relationship("EventPrize", back_populates="event")
+    locations: Mapped[Optional[List["Location"]]] = relationship("Location", secondary="EventLocation",
+                                                                 back_populates="events")
+    icons: Mapped[Optional[List["Icon"]]] = relationship("Icon", secondary="EventIconSocial")
+
+
+class Track(BaseModel):
+    __tablename__ = "track"
+
+    title: str = Column(String, nullable=False)
+    description: str = Column(Text, nullable=False)
+    is_score_based: bool = Column(Boolean, nullable=False, default=False)
+    event_id: int = Column(Integer, ForeignKey("event.id"), nullable=False)
+    date_id: int = Column(Integer, ForeignKey("date.id"), nullable=False)
+    status_id: int = Column(Integer, ForeignKey("status.id"), nullable=False)
+
+    event: Mapped["Event"] = relationship("Event", back_populates="tracks")
+    date: Mapped["Date"] = relationship("Date")
+    status: Mapped["Status"] = relationship("Status", back_populates="tracks")
+
+
+class AcceptedTeam(BaseModel):
+    __tablename__ = "accepted_team"
+
+    team_id: int = Column(Integer, ForeignKey("team.id"), primary_key=True, nullable=False)
+    track_id: int = Column(Integer, ForeignKey("track.id"), primary_key=True, nullable=False)
+    is_active: bool = Column(Boolean, nullable=False, default=True)
+
+
+class TrackWinner(BaseModel):
+    __tablename__ = "track_winner"
+
+    track_id: int = Column(Integer, ForeignKey("track.id"), primary_key=True, nullable=False)
+    accepted_team_id: int = Column(Integer, ForeignKey("accepted_team.id"), nullable=False)
+    place: int = Column(Integer, nullable=False)
+    is_awardee: bool = Column(Boolean, nullable=False, default=False)
+
+
+class EventPrize(BaseModel):
+    __tablename__ = "event_prize"
+
+    place: int = Column(Integer, nullable=False)
+    primary_prize: str = Column(String, nullable=False)
+    description: str = Column(Text, nullable=False)
+    icon_id: int = Column(Integer, ForeignKey("icon.id"), nullable=False)
+    event_id: int = Column(Integer, ForeignKey("event.id"), nullable=False)
+
+    icon: Mapped["Icon"] = relationship("Icon")
+    event: Mapped["Event"] = relationship("Event")
+
+
+class Location(BaseModel):
+    title: str = Column(String, nullable=False, unique=True)
+
+    events: Mapped[Optional[List["Event"]]] = relationship("Event", secondary="EventLocation",
+                                                           back_populates="locations")
+
+
+class EventLocation(ManyToManyBase):
+    __tablename__ = "event_location"
+
+    location_id: int = Column(Integer, ForeignKey("location.id"), primary_key=True, nullable=False)
+    event_id: int = Column(Integer, ForeignKey("event.id"), nullable=False)
+
+
+class EventIconSocial(ManyToManyBase):
+    __tablename__ = "event_icon_social"
+
+    icon_id: int = Column(Integer, ForeignKey("icon.id"), primary_key=True, nullable=False)
+    event_id: int = Column(Integer, ForeignKey("event.id"), nullable=False)
+
+
+class ActionType(BaseModel):
+    __tablename__ = "action_type"
+
+    title: str = Column(String, nullable=False)
+    comparator: str = Column(String, nullable=False)
+    threshold_value: int = Column(Integer, nullable=False)
+
+    timeline_points: Mapped["TimelinePoint"] = relationship("TimelinePoint", back_populates="action_type")
+
+
+class TimelinePoint(BaseModel):
+    __tablename__ = "timeline_point"
+
+    title: str = Column(String, nullable=False)
+    description: str = Column(Text, nullable=False)
+    deadline: DateTime = Column(DateTime, nullable=False)
+    is_blocking: bool = Column(Boolean, nullable=False, default=False)
+    prev_timeline_point_id: int = Column(Integer, ForeignKey("timeline_point.id", ondelete="SET NULL"), nullable=False)
+    next_timeline_point_id: int = Column(Integer, ForeignKey("timeline_point.id", ondelete="SET NULL"), nullable=False)
+    action_type_id: int = Column(Integer, ForeignKey("action_type.id"), nullable=False)
+
+    prev_timeline_point: Mapped[Optional["TimelinePoint"]] = relationship("TimelinePoint",
+                                                                          foreign_keys=[prev_timeline_point_id], )
+
+    next_timeline_point: Mapped[Optional["TimelinePoint"]] = relationship("TimelinePoint",
+                                                                          foreign_keys=[next_timeline_point_id], )
+    action_type: Mapped["ActionType"] = relationship("ActionType", back_populates="timeline_points")
+
+
+class Timeline(BaseModel):
+    __tablename__ = "timeline"
+
+    track_id: int = Column(Integer, ForeignKey("track.id"), primary_key=True, nullable=False)
+    start_timeline_point: int = Column(Integer, ForeignKey("timeline_point.id"), primary_key=True, nullable=False)
