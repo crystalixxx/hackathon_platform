@@ -41,8 +41,8 @@ class User(BaseModel):
     first_name: str = Column(String(256), nullable=False)
     last_name: str = Column(String(256), nullable=False)
     hashed_password: str = Column(String(256), nullable=False)
-    role: str | None = Column(String(256), default=None)
-    link_cv: AnyUrl | None = Column(String(256), default=None)
+    role: Optional[str] = Column(String(256), default=None)
+    link_cv: Optional[AnyUrl] = Column(String(256), default=None)
 
     tags: Mapped[List["UserTag"]] = relationship("UserTag")
     teams: Mapped[List["Team"]] = relationship("Team", secondary="t_team_user", back_populates="users")
@@ -60,7 +60,7 @@ class Team(BaseModel):
 
     title: str = Column(String(256), unique=True, nullable=False)
     description: str = Column(Text, default="")
-    icon_url: AnyUrl | None = Column(String(256), default=None)
+    icon_url: Optional[AnyUrl] = Column(String(256), default=None)
     captain_id: id = Column(Integer, ForeignKey("t_user.id"), nullable=False)
     is_looking_for_members: bool = Column(Boolean, default=False)
 
