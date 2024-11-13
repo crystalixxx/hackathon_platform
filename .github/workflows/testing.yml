@@ -19,20 +19,20 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      - name: Install dependencies
+      - name: Install dependencies in Users And Teams Service
         run: |
           python -m pip install --upgrade pip
           pip install poetry
           poetry install
           poetry run pip install coverage
-        working-directory: ./backend
+        working-directory: ./services/user_and_teams_service
 
-      - name: Testing
+      - name: Testing Users And Teams Service
         run: |
           poetry run coverage run -m pytest  -v -s
-        working-directory: ./backend/app
+        working-directory: ./services/user_and_teams_service/app
 
       - name: Generate Coverage Report
         run: |
           poetry run coverage report -m
-        working-directory: ./backend/app
+        working-directory: ./services/user_and_teams_service/app
