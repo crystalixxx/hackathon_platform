@@ -25,14 +25,14 @@ jobs:
           pip install poetry
           poetry install
           poetry run pip install coverage
-        working-directory: ./backend
+        working-directory: ./services
 
       - name: Testing
         run: |
           poetry run coverage run -m pytest  -v -s
-        working-directory: ./backend/app
+        working-directory: ./services/app
 
       - name: Generate Coverage Report
         run: |
           poetry run coverage report -m
-        working-directory: ./backend/app
+        working-directory: ./services/app
