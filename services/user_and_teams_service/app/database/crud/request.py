@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+
 from app.database.models import Request
 from app.database.schemas.request import RequestCreate, RequestSchema
 
@@ -22,9 +23,7 @@ def create_request(db: Session, request: RequestCreate) -> RequestSchema:
     return new_request
 
 
-def update_request(
-    db: Session, request_id: int, request: RequestCreate
-) -> RequestSchema | None:
+def update_request(db: Session, request_id: int, request: RequestCreate) -> RequestSchema | None:
     old_request = get_request_by_id(db, request_id)
 
     if old_request is None:
