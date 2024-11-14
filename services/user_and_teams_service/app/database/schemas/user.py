@@ -1,38 +1,37 @@
-from datetime import datetime
+from pydantic import BaseModel, EmailStr
 from typing import Optional
-
-from pydantic import BaseModel, EmailStr, Field
 
 
 class UserBase(BaseModel):
-    id: int
     email: EmailStr
     first_name: str
     second_name: str
-    hashed_password: str
     role: str
     link_cv: Optional[str]
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    class Config:
+        from_attributes = True
+        arbitrary_types_allowed = True
 
 
-class UserCreate(UserBase):
+class UserCreateSchema(UserBase):
     hashed_password: str
 
 
-class UserUpdate(UserBase):
+class UserUpdateSchema(BaseModel):
     email: Optional[EmailStr]
-    hashed_password: Optional[str]
+    first_name: Optional[str]
+    second_name: Optional[str]
     role: Optional[str]
     link_cv: Optional[str]
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    hashed_password: Optional[str]
 
-    model_config = {"from_attributes": True, "arbitrary_types_allowed": True}
+    class Config:
+        from_attributes = True
 
 
-class UserResponse(UserBase):
+class UserSchema(UserBase):
     id: int
-    created_at: datetime.utcnow()
-    updated_at: datetime.utcnow()
 
-    model_config = {"from_attributes": True, "arbitrary_types_allowed": True}
+    class Config:
+        from_attributes = True

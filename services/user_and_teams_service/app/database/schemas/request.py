@@ -1,19 +1,22 @@
 from pydantic import BaseModel
 
 
-class TRequestBase(BaseModel):
-    request_team_id: int
+class RequestBase(BaseModel):
     user_id: int
     sent_by_team: bool
     is_ok: bool
 
+    class Config:
+        from_attributes = True
 
-class TRequestCreate(TRequestBase):
+
+class RequestCreateSchema(RequestBase):
     request_team_id: int
 
 
-class TRequestResponse(TRequestBase):
+class RequestSchema(RequestBase):
     id: int
     request_team_id: int
 
-    model_config = {"from_attributes": True}
+    class Config:
+        from_attributes = True

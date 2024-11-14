@@ -2,17 +2,19 @@ from pydantic import BaseModel
 
 
 class UserTagBase(BaseModel):
-    user_tag_id: int
-    user_id: int
     name: str
 
+    class Config:
+        from_attributes = True
 
-class UserTagCreate(UserTagBase):
+
+class UserTagCreateSchema(UserTagBase):
     user_id: int
 
 
-class UserTagResponse(UserTagBase):
+class UserTagSchema(UserTagBase):
     user_tag_id: int
     user_id: int
 
-    model_config = {"from_attributes": True}
+    class Config:
+        from_attributes = True
