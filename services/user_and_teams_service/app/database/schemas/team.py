@@ -25,4 +25,3 @@ class TeamUpdate(BaseModel):
 
 class TeamSchema(TeamBase):
     id: int
-
