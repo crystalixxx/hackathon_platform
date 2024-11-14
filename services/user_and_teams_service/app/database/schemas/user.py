@@ -11,14 +11,13 @@ class UserBase(BaseModel):
 
     class Config:
         from_attributes = True
-        arbitrary_types_allowed = True
 
 
-class UserCreateSchema(UserBase):
+class UserCreate(UserBase):
     hashed_password: str
 
 
-class UserUpdateSchema(BaseModel):
+class UserUpdate(BaseModel):
     email: Optional[EmailStr]
     first_name: Optional[str]
     second_name: Optional[str]
@@ -26,12 +25,6 @@ class UserUpdateSchema(BaseModel):
     link_cv: Optional[str]
     hashed_password: Optional[str]
 
-    class Config:
-        from_attributes = True
-
 
 class UserSchema(UserBase):
     id: int
-
-    class Config:
-        from_attributes = True

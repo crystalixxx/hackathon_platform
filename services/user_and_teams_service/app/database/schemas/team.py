@@ -23,13 +23,7 @@ class TeamUpdateSchema(BaseModel):
     is_looking_for_members: Optional[bool]
     captain_id: Optional[int]
 
-    class Config:
-        from_attributes = True
-
 
 class TeamSchema(TeamBase):
     id: int
     captain_id: int
-
-    class Config:
-        from_attributes = True

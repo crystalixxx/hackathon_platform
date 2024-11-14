@@ -15,6 +15,3 @@ class UserTagCreateSchema(UserTagBase):
 class UserTagSchema(UserTagBase):
     user_tag_id: int
     user_id: int
-
-    class Config:
-        from_attributes = True

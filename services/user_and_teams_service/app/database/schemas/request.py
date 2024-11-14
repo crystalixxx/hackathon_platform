@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class RequestBase(BaseModel):
-    user_id: int
+    request_team_id: int
     sent_by_team: bool
     is_ok: bool
 
@@ -11,12 +11,9 @@ class RequestBase(BaseModel):
 
 
 class RequestCreateSchema(RequestBase):
-    request_team_id: int
+    user_id: int
 
 
 class RequestSchema(RequestBase):
     id: int
-    request_team_id: int
-
-    class Config:
-        from_attributes = True
+    user_id: int
