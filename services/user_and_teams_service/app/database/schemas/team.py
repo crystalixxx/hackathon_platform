@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
 
@@ -8,15 +8,14 @@ class TeamBase(BaseModel):
     icon_link: Optional[str]
     is_looking_for_members: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
-class TeamCreateSchema(TeamBase):
+class TeamCreate(TeamBase):
     captain_id: int
 
 
-class TeamUpdateSchema(BaseModel):
+class TeamUpdate(BaseModel):
     title: Optional[str]
     description: Optional[str]
     icon_link: Optional[str]
@@ -26,4 +25,4 @@ class TeamUpdateSchema(BaseModel):
 
 class TeamSchema(TeamBase):
     id: int
-    captain_id: int
+

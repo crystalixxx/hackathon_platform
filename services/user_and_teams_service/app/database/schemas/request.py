@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class RequestBase(BaseModel):
@@ -6,14 +6,14 @@ class RequestBase(BaseModel):
     sent_by_team: bool
     is_ok: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
-class RequestCreateSchema(RequestBase):
+class RequestCreate(RequestBase):
     user_id: int
 
 
 class RequestSchema(RequestBase):
     id: int
     user_id: int
+    request_team_id: int
