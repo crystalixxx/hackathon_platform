@@ -17,7 +17,7 @@ def get_user_by_email(db: Session, email: str) -> UserSchema | None:
     return db.query(User).filter(User.email == email).first()
 
 
-def create_user(db: Session, user: UserSchema) -> UserSchema | None:
+def create_user(db: Session, user: UserCreate) -> UserSchema | None:
     if get_user_by_email(db, user.email):
         return None
 
