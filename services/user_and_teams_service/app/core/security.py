@@ -4,7 +4,7 @@ import jwt
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
 
-from app.misc.config import config
+from app.core.config import config
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
