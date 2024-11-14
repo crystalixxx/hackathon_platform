@@ -10,7 +10,12 @@ def get_user_tags(db: Session, user_id: int) -> list[UserTagSchema]:
 
 
 def get_tag_by_name(db: Session, user_id: str, tag_name: str) -> UserTagSchema | None:
-    return db.query(UserTag).filter(UserTag.user_id == user_id).filter(UserTag.name == tag_name).first()
+    return (
+        db.query(UserTag)
+        .filter(UserTag.user_id == user_id)
+        .filter(UserTag.name == tag_name)
+        .first()
+    )
 
 
 def get_tag_by_id(db: Session, tag_id: int) -> UserTagSchema | None:
@@ -34,7 +39,9 @@ def create_user_tag(db: Session, user_tag: UserTagCreate) -> UserTagSchema | Non
     return tag
 
 
-def update_user_tag(db: Session, user_tag_id: int, user_tag: UserTagUpdate) -> UserTagSchema | None:
+def update_user_tag(
+    db: Session, user_tag_id: int, user_tag: UserTagUpdate
+) -> UserTagSchema | None:
     old_tag = get_tag_by_id(db, user_tag_id)
 
     if old_tag is None:
@@ -51,7 +58,7 @@ def update_user_tag(db: Session, user_tag_id: int, user_tag: UserTagUpdate) -> U
     return old_tag
 
 
-def delete_user_tag(db: Session, user_tag_id: int) ->  UserTagSchema | None:
+def delete_user_tag(db: Session, user_tag_id: int) -> UserTagSchema | None:
     user_tag = get_tag_by_id(db, user_tag_id)
 
     if user_tag is None:
