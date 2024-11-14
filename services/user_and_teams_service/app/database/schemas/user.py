@@ -4,7 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
 
 
-class TUserBase(BaseModel):
+class UserBase(BaseModel):
     id: int
     email: EmailStr
     first_name: str
@@ -16,11 +16,11 @@ class TUserBase(BaseModel):
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 
-class TUserCreate(TUserBase):
+class UserCreate(UserBase):
     hashed_password: str
 
 
-class TUserUpdate(TUserBase):
+class UserUpdate(UserBase):
     email: Optional[EmailStr]
     hashed_password: Optional[str]
     role: Optional[str]
@@ -30,7 +30,7 @@ class TUserUpdate(TUserBase):
     model_config = {"from_attributes": True, "arbitrary_types_allowed": True}
 
 
-class UserResponse(TUserBase):
+class UserResponse(UserBase):
     id: int
     created_at: datetime.utcnow()
     updated_at: datetime.utcnow()

@@ -5,20 +5,20 @@ from pydantic import BaseModel
 
 
 class TTeam(BaseModel):
-    id: uuid.UUID
+    id: int
     title: str
     description: Optional[str]
     icon_link: Optional[str]
-    captain_id: uuid.UUID
+    captain_id: int
     is_looking_for_members: bool = True
     created_at: datetime.datetime.utcnow()
     updated_at: datetime.datetime.utcnow()
 
 
 class TTeamCreate(BaseModel):
-    id: uuid.UUID
+    id: int
     title: str
-    captain_id: uuid.UUID
+    captain_id: int
     is_looking_for_members: bool = True
     created_at: datetime.datetime.utcnow()
     updated_at: datetime.datetime.utcnow()
@@ -28,14 +28,14 @@ class TTeamUpdate(BaseModel):
     title: str
     description: Optional[str]
     icon_link: Optional[str]
-    captain_id: uuid.UUID
+    captain_id: int
     is_looking_for_members: bool
     updated_at: datetime.datetime.utcnow()
 
 
 class TTeamResponse(BaseModel):
-    id: uuid.UUID
-    captain_id: uuid.UUID
+    id: int
+    captain_id: int
     created_at: datetime.datetime.utcnow()
     updated_at: datetime.datetime.utcnow()
 
@@ -43,8 +43,8 @@ class TTeamResponse(BaseModel):
 
 
 class TeamUserBase(BaseModel):
-    team_id: uuid.UUID
-    user_id: uuid.UUID
+    team_id: int
+    user_id: int
     role_name: str
 
 

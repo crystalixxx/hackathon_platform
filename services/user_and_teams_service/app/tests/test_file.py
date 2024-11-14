@@ -1,5 +1,5 @@
 from datetime import datetime
-from ..database.schemas.user import TUserCreate
+from ..database.schemas.user import UserCreate
 
 
 def test_user_create():
@@ -19,7 +19,7 @@ def test_user_create():
         # future version. Use timezone-aware objects to represent datetime in UTC: datetime.datetime.now(datetime.UTC).
     }
 
-    user = TUserCreate(**user_data)
+    user = UserCreate(**user_data)
 
     assert user.id == user_data["id"]
     assert user.email == user_data["email"]
