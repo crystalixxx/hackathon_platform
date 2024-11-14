@@ -45,7 +45,9 @@ class User(BaseModel):
     link_cv: Optional[AnyUrl] = Column(String(256), default=None)
 
     tags: Mapped[List["UserTag"]] = relationship("UserTag")
-    teams: Mapped[List["Team"]] = relationship("Team", secondary="t_team_user", back_populates="users")
+    teams: Mapped[List["Team"]] = relationship(
+        "Team", secondary="t_team_user", back_populates="users"
+    )
 
 
 class UserTag(BaseModel):
@@ -66,7 +68,9 @@ class Team(BaseModel):
 
     tags: Mapped[List["UserTag"]] = relationship("UserTag", secondary="t_team_tag")
     requests: Mapped[List["User"]] = relationship("User", secondary="t_request")
-    users: Mapped[List["User"]] = relationship("User", secondary="t_team_user", back_populates="teams")
+    users: Mapped[List["User"]] = relationship(
+        "User", secondary="t_team_user", back_populates="teams"
+    )
 
 
 class TeamTag(ManyToManyBase):
