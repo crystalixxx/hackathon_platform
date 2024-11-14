@@ -1,4 +1,3 @@
-import uuid
 from datetime import datetime
 from typing import Optional
 
@@ -6,7 +5,7 @@ from pydantic import BaseModel, EmailStr, Field
 
 
 class TUserBase(BaseModel):
-    id: uuid.UUID
+    id: int
     email: EmailStr
     first_name: str
     second_name: str
@@ -32,7 +31,7 @@ class TUserUpdate(TUserBase):
 
 
 class UserResponse(TUserBase):
-    id: uuid.UUID
+    id: int
     created_at: datetime.utcnow()
     updated_at: datetime.utcnow()
 

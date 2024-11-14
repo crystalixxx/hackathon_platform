@@ -1,4 +1,3 @@
-import uuid
 from datetime import datetime
 from ..database.schemas.user import TUserCreate
 
@@ -7,7 +6,7 @@ def test_user_create():
     """Проверяет, что можно создать пользователя и что все поля заполнены корректно"""
 
     user_data = {
-        "id": uuid.uuid4(),
+        "id": 1,
         "email": "test@example.com",
         "first_name": "John",
         "second_name": "Doe",
