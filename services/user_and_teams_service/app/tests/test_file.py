@@ -14,8 +14,8 @@ def test_user_create():
         "hashed_password": "hashedpassword123",
         "role": "admin",
         "link_cv": "https://example.com/cv",
-        "created_at": datetime.datetime.now(datetime.UTC),
-        "updated_at": datetime.datetime.now(datetime.UTC),
+        "created_at": datetime.now(),
+        "updated_at": datetime.now(),
         # datetime.datetime.utcnow() is deprecated and scheduled for removal in a
         # future version. Use timezone-aware objects to represent datetime in UTC: datetime.datetime.now(datetime.UTC).
     }

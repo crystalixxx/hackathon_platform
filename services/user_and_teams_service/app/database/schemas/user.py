@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class TUserBase(BaseModel):
@@ -13,8 +13,8 @@ class TUserBase(BaseModel):
     hashed_password: str
     role: str
     link_cv: Optional[str]
-    created_at: datetime.datetime.utcnow()
-    updated_at: datetime.datetime.utcnow()
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 
 class TUserCreate(TUserBase):
@@ -26,12 +26,14 @@ class TUserUpdate(TUserBase):
     hashed_password: Optional[str]
     role: Optional[str]
     link_cv: Optional[str]
-    updated_at = datetime.datetime.utcnow()
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    model_config = {"from_attributes": True, "arbitrary_types_allowed": True}
 
 
 class UserResponse(TUserBase):
     id: uuid.UUID
-    created_at: datetime.datetime.utcnow()
-    updated_at: datetime.datetime.utcnow()
+    created_at: datetime.utcnow()
+    updated_at: datetime.utcnow()
 
-    model_config = {"from_attributes": True}
+    model_config = {"from_attributes": True, "arbitrary_types_allowed": True}
