@@ -42,7 +42,9 @@ def update_user(db: Session, user_id: int, user: UserUpdate) -> UserSchema | Non
     dict_new_user = user.dict(exclude_none=True)
 
     if dict_new_user["password"] is not None:
-        setattr(old_user, "hashed_password", get_hashed_password(dict_new_user["password"]))
+        setattr(
+            old_user, "hashed_password", get_hashed_password(dict_new_user["password"])
+        )
         del dict_new_user["password"]
 
     for key, value in dict_new_user.items():
