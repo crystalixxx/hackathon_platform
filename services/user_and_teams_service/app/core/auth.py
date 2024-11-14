@@ -1,12 +1,11 @@
-import jwt
-
 from fastapi import Depends, HTTPException
+from jwt import decode, DecodeError
 from sqlalchemy.orm import Session
 from starlette import status
 
 from app.database.crud.user import create_user, get_user_by_email
 from app.database.session import get_db
-from app.database.schemas.user import UserCreate, User
+from app.database.schemas.user import UserCreate, UserSchema
 from app.core.security import oauth2_scheme, verify_password
 from app.core.config import config
 
@@ -21,12 +20,12 @@ async def get_current_user(
     )
 
     try:
-        payload = jwt.decode(token, config.SECURITY_KEY, algorithms=[config.ALGORITHM])
+        payload = decode(token, config.SECURITY_KEY, algorithms=[config.ALGORITHM])
         email = payload.get("sub")
 
         if email is None:
             raise credentials_exception
-    except:
+    except DecodeError:
         raise credentials_exception
 
     user = get_user_by_email(db, email)
@@ -48,7 +47,7 @@ def authenticate_user(email: str, password: str, db):
     return user
 
 
-def sign_up_new_user( db: Session, email: str, first_name: str, second_name: str, password: str, link_cv: str = None):
+def sign_up_new_user(db: Session, email: str, first_name: str, second_name: str, password: str, link_cv: str = None) -> UserSchema:
     user = get_user_by_email(db, email)
     if user:
         return False
