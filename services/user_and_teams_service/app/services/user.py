@@ -46,6 +46,11 @@ class UserService:
             return user
 
     async def delete_user(self, uow: AbstractUnitOfWork, user_id: int):
+        user = self.get_user_by_id(uow, user_id)
+
+        if user is None:
+            return None
+
         async with uow:
             user = await uow.users.delete({"id": user_id})
             return user
