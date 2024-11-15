@@ -26,3 +26,11 @@ class TeamTag(base.ManyToManyBase):
 
     team_id: int = Column(Integer, ForeignKey("t_team.id"), nullable=False)
     user_tag_id: int = Column(Integer, ForeignKey("t_user_tag.id"), nullable=False)
+
+
+class TeamUser(base.ManyToManyBase):
+    __tablename__ = "t_team_user"
+
+    team_id: int = Column(Integer, ForeignKey("t_team.id"), nullable=False)
+    user_id: int = Column(Integer, ForeignKey("t_user.id"), nullable=False)
+    role_name: str = Column(String(256), nullable=False)
