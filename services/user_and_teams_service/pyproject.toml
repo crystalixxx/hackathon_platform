@@ -17,6 +17,8 @@ coverage = "^7.6.3"
 sqlalchemy = "^2.0.35"
 alembic = "^1.13.3"
 pydantic-settings = "^2.6.0"
+pyjwt = "^2.9.0"
+passlib = "^1.7.4"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
