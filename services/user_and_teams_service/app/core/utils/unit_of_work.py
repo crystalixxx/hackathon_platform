@@ -1,25 +1,31 @@
 from abc import ABC, abstractmethod
+from collections.abc import Coroutine
 
-from app.core.utils.repositories import AbstractRepository, SQLAlchemyRepository
+from app.core.utils.repositories import AbstractRepository
 from app.database.session import get_db
+from app.repositories import UserRepository, TeamRepository
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class AbstractUnitOfWork(ABC):
     batches: AbstractRepository
 
-    def __enter__(self):
+    @abstractmethod
+    def __init__(self, session_factory):
+        raise NotImplementedError
+
+    async def __aenter__(self):
         return self
 
-    def __exit__(self, *args):
-        self.rollback()
+    async def __aexit__(self, *args):
+        await self.rollback()
 
     @abstractmethod
-    def commit(self):
+    async def commit(self):
         raise NotImplementedError
 
     @abstractmethod
-    def rollback(self):
+    async def rollback(self):
         raise NotImplementedError
 
 
@@ -27,17 +33,20 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
     def __init__(self, session_factory=get_db):
         self.session_factory = session_factory
 
-    def __enter__(self):
-        self.session: AsyncSession = self.session_factory()
-        self.batches = SQLAlchemyRepository(self.session)
-        return super().__enter__()
+    async def __aenter__(self):
+        self.session: AsyncSession = await self.session_factory()
 
-    def __exit__(self, *args):
-        super().__exit__(*args)
-        self.session.close()
+        self.user = UserRepository(self.session)
+        self.team = TeamRepository(self.session)
 
-    def commit(self):
-        self.session.commit()
+        return super().__aenter__()
 
-    def rollback(self):
-        self.session.rollback()
+    async def __aexit__(self, *args):
+        await super().__aexit__(*args)
+        await self.session.close()
+
+    async def commit(self):
+        await self.session.commit()
+
+    async def rollback(self):
+        await self.session.rollback()
