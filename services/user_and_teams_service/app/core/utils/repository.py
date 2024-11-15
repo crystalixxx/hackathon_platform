@@ -18,6 +18,10 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    async def find_some(self, filter_data: dict):
+        raise NotImplementedError
+
+    @abstractmethod
     async def update(self, filter_data: dict, data: dict) -> int:
         raise NotImplementedError
 
@@ -51,6 +55,14 @@ class SQLAlchemyRepository(AbstractRepository):
         result = await self.session.execute(stmt)
 
         return result.scalar_one().to_read_model()
+
+
+    async def find_some(self, filter_data: dict):
+        stmt = select(self.model).filter_by(**filter_data)
+        result = await self.session.execute(stmt)
+        result = [row[0].to_read_model() for row in result]
+
+        return result
 
 
     async def update(self, filter_data: dict, data: dict) -> int:

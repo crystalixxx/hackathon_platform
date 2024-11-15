@@ -13,7 +13,6 @@ class UserTagCreate(UserTagBase):
 
 class UserTagUpdate(BaseModel):
     name: str
-    user_id: int
 
 
 class UserTagSchema(UserTagBase):
