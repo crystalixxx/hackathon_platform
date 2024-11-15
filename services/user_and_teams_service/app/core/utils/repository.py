@@ -14,15 +14,15 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def find_one(self, data: dict):
+    async def find_one(self, filter_data: dict):
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, row_id: int, data: dict) -> int:
+    async def update(self, filter_data: dict, data: dict) -> int:
         raise NotImplementedError
 
     @abstractmethod
-    async def delete(self, row_id: int):
+    async def delete(self, filter_data: dict):
         raise NotImplementedError
 
 
