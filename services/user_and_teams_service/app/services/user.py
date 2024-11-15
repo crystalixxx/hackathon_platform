@@ -38,9 +38,7 @@ class UserService:
         user_dict = user.model_dump(exclude_none=True)
 
         if user_dict["password"] is not None:
-            setattr(
-                old_user, "hashed_password", get_hashed_password(user_dict["password"])
-            )
+            setattr(user_dict, "hashed_password", get_hashed_password(user_dict["password"]))
             del user_dict["password"]
 
         async with uow:
