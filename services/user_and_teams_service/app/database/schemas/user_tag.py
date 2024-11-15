@@ -16,5 +16,5 @@ class UserTagUpdate(BaseModel):
 
 
 class UserTagSchema(UserTagBase):
-    user_tag_id: int
+    id: int
     user_id: int

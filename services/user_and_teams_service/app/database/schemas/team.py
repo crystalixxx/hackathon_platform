@@ -25,3 +25,4 @@ class TeamUpdate(BaseModel):
 
 class TeamSchema(TeamBase):
     id: int
+    captain_id: int

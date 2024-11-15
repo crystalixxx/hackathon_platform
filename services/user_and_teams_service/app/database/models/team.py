@@ -3,6 +3,7 @@ from typing import Optional, List
 from sqlalchemy import Column, String, Integer, Text, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, relationship
 
+from app.database.schemas.team import TeamSchema
 from . import base, user
 
 class Team(base.BaseModel):
@@ -19,6 +20,16 @@ class Team(base.BaseModel):
     users: Mapped[List["user.User"]] = relationship(
         "User", secondary="t_team_user", back_populates="teams"
     )
+
+    def to_read_model(self) -> TeamSchema:
+        return TeamSchema(
+            id=self.id,
+            title=self.title,
+            description=self.description,
+            icon_url=self.icon_url,
+            captain_id=self.captain_id,
+            is_looking_for_members=self.is_looking_for_members,
+        )
 
 
 class TeamTag(base.ManyToManyBase):
