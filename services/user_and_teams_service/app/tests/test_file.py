@@ -7,7 +7,7 @@ def test_user():
     user_data = {
         "email": "test@example.com",
         "first_name": "John",
-        "second_name": "Doe",
+        "last_name": "Doe",
         "role": "admin",
         "link_cv": "https://example.com/cv",
     }
@@ -16,6 +16,6 @@ def test_user():
 
     assert user.email == user_data["email"]
     assert user.first_name == user_data["first_name"]
-    assert user.second_name == user_data["second_name"]
+    assert user.last_name == user_data["second_name"]
     assert user.role == user_data["role"]
     assert user.link_cv == user_data["link_cv"]
