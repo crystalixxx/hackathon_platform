@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from collections.abc import Coroutine
 
 from app.core.utils.repositories import AbstractRepository
 from app.database.session import get_db

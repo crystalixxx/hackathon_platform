@@ -46,15 +46,15 @@ class SQLAlchemyRepository(AbstractRepository):
         return result
 
 
-    async def find_one(self, data: dict):
-        stmt = select(self.model).filter_by(**data)
+    async def find_one(self, filter_data: dict):
+        stmt = select(self.model).filter_by(**filter_data)
         result = await self.session.execute(stmt)
 
         return result.scalar_one().to_read_model()
 
 
-    async def update(self, row_id: int, data: dict) -> int:
-        model_object = await self.find_one({"id": row_id})
+    async def update(self, filter_data: dict, data: dict) -> int:
+        model_object = await self.find_one(**filter_data)
 
         for key, value in data.items():
             setattr(model_object, key, value)
@@ -64,8 +64,8 @@ class SQLAlchemyRepository(AbstractRepository):
         return model_object.id
 
 
-    async def delete(self, row_id: int):
-        model_object = await self.find_one({"id": row_id})
+    async def delete(self, filter_data: dict):
+        model_object = await self.find_one(**filter_data)
 
         await self.session.delete(model_object)
 
