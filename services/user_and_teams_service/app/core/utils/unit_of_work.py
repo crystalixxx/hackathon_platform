@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from app.core.utils.repositories import AbstractRepository
 from app.database.session import get_db
-from app.repositories import UserRepository, TeamRepository
+from app.repositories import UserRepository, TeamRepository, RequestRepository
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -37,6 +37,7 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
 
         self.user = UserRepository(self.session)
         self.team = TeamRepository(self.session)
+        self.request = RequestRepository(self.session)
 
         return super().__aenter__()
 
