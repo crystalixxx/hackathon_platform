@@ -1,5 +1,6 @@
-from pydantic import BaseModel, ConfigDict
 from typing import Optional
+
+from pydantic import BaseModel, ConfigDict
 
 
 class TeamBase(BaseModel):
@@ -25,3 +26,4 @@ class TeamUpdate(BaseModel):
 
 class TeamSchema(TeamBase):
     id: int
+    captain_id: int

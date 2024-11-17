@@ -10,7 +10,7 @@ package-mode = false
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = "^0.115.0"
-uvicorn = {extras = ["standart"], version = "^0.31.0"}
+uvicorn = {extras = ["standard"], version = "^0.31.0"}
 pydantic = {extras = ["email"], version = "^2.9.2"}
 ruff = "^0.6.9"
 coverage = "^7.6.3"
@@ -19,6 +19,7 @@ alembic = "^1.13.3"
 pydantic-settings = "^2.6.0"
 pyjwt = "^2.9.0"
 passlib = "^1.7.4"
+pre-commit = "^4.0.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"

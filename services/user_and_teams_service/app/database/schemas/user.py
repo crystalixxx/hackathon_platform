@@ -1,11 +1,12 @@
-from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Optional
+
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class UserBase(BaseModel):
     email: EmailStr
     first_name: str
-    second_name: str
+    last_name: str
     role: str
     link_cv: Optional[str]
 
@@ -27,3 +28,4 @@ class UserUpdate(BaseModel):
 
 class UserSchema(UserBase):
     id: int
+    hashed_password: str
