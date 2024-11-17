@@ -1,10 +1,13 @@
+from typing import List, Optional
+
 from pydantic import AnyUrl
-from typing import Optional, List
-from sqlalchemy import Column, String, Integer, Text, ForeignKey, Boolean
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, relationship
 
 from app.database.schemas.team import TeamSchema
+
 from . import base, user
+
 
 class Team(base.BaseModel):
     __tablename__ = "t_team"

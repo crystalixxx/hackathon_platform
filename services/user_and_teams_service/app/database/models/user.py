@@ -1,10 +1,12 @@
-from pydantic import EmailStr, AnyUrl
-from typing import Optional, List
-from sqlalchemy import Column, String, Integer, ForeignKey
+from typing import List, Optional
+
+from pydantic import AnyUrl, EmailStr
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, relationship
 
 from app.database.schemas.user import UserSchema
 from app.database.schemas.user_tag import UserTagSchema
+
 from . import base, team
 
 

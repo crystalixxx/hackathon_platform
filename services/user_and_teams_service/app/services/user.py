@@ -1,7 +1,7 @@
+from app.core.security import get_hashed_password
+from app.core.utils.unit_of_work import AbstractUnitOfWork
 from app.database.schemas.user import UserCreate, UserUpdate
 from app.database.schemas.user_tag import UserTagCreate, UserTagUpdate
-from app.core.utils.unit_of_work import AbstractUnitOfWork
-from app.core.security import get_hashed_password
 
 
 class UserService:
@@ -30,7 +30,9 @@ class UserService:
             user = await uow.users.find_one({"email": email})
             return user
 
-    async def update_user(self, uow: AbstractUnitOfWork, user: UserUpdate, user_id: int):
+    async def update_user(
+        self, uow: AbstractUnitOfWork, user: UserUpdate, user_id: int
+    ):
         old_user = self.get_user_by_id(uow, user_id)
 
         if old_user is None:
@@ -39,7 +41,9 @@ class UserService:
         user_dict = user.model_dump(exclude_none=True)
 
         if user_dict["password"] is not None:
-            setattr(user_dict, "hashed_password", get_hashed_password(user_dict["password"]))
+            setattr(
+                user_dict, "hashed_password", get_hashed_password(user_dict["password"])
+            )
             del user_dict["password"]
 
         async with uow:
@@ -68,12 +72,22 @@ class UserService:
             user_tags = await uow.user_tags.find_some({"user_id": user_id})
             return user_tags
 
-    async def get_user_tag_by_name(self, uow: AbstractUnitOfWork, user_id: int, tag_name: str):
+    async def get_user_tag_by_name(
+        self, uow: AbstractUnitOfWork, user_id: int, tag_name: str
+    ):
         async with uow:
-            user_tag = await uow.user_tags.find_one({"name": tag_name, "user_id": user_id})
+            user_tag = await uow.user_tags.find_one(
+                {"name": tag_name, "user_id": user_id}
+            )
             return user_tag
 
-    async def update_user_tag(self, uow: AbstractUnitOfWork, user_tag: UserTagUpdate, user_id: int, tag_name: str):
+    async def update_user_tag(
+        self,
+        uow: AbstractUnitOfWork,
+        user_tag: UserTagUpdate,
+        user_id: int,
+        tag_name: str,
+    ):
         user_tag_dict = user_tag.model_dump(exclude_none=True)
         old_user_tag = self.get_user_tag_by_name(uow, user_id, tag_name)
 
@@ -81,15 +95,21 @@ class UserService:
             return None
 
         async with uow:
-            user_tag = await uow.user_tags.update({"user_id": user_id, "name": tag_name}, user_tag_dict)
+            user_tag = await uow.user_tags.update(
+                {"user_id": user_id, "name": tag_name}, user_tag_dict
+            )
             return user_tag
 
-    async def delete_user_tag(self, uow: AbstractUnitOfWork, user_id: int, tag_name: str):
+    async def delete_user_tag(
+        self, uow: AbstractUnitOfWork, user_id: int, tag_name: str
+    ):
         user_tag = self.get_user_tag_by_name(uow, user_id, tag_name)
 
         if user_tag is None:
             return None
 
         async with uow:
-            user_tag = await uow.user_tags.delete({"user_id": user_id, "name": tag_name})
+            user_tag = await uow.user_tags.delete(
+                {"user_id": user_id, "name": tag_name}
+            )
             return user_tag

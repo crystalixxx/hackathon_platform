@@ -1,5 +1,5 @@
-from app.database.schemas.team import TeamCreate, TeamUpdate
 from app.core.utils.unit_of_work import AbstractUnitOfWork
+from app.database.schemas.team import TeamCreate, TeamUpdate
 
 
 class TeamService:
@@ -25,7 +25,9 @@ class TeamService:
             team = await uow.team.find_one({"name": team_name})
             return team
 
-    async def update_team(self, uow: AbstractUnitOfWork, team: TeamUpdate, team_id: int):
+    async def update_team(
+        self, uow: AbstractUnitOfWork, team: TeamUpdate, team_id: int
+    ):
         old_team = self.get_team_by_id(uow, team_id)
 
         if old_team is None:

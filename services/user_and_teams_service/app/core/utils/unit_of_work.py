@@ -1,9 +1,15 @@
 from abc import ABC, abstractmethod
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.utils.repositories import AbstractRepository
 from app.database.session import get_db
-from app.repositories import UserRepository, TeamRepository, RequestRepository, UserTagRepository
-from sqlalchemy.ext.asyncio import AsyncSession
+from app.repositories import (
+    RequestRepository,
+    TeamRepository,
+    UserRepository,
+    UserTagRepository,
+)
 
 
 class AbstractUnitOfWork(ABC):
