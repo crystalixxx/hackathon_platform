@@ -1,13 +1,12 @@
-from fastapi import Depends, HTTPException
-from jwt import DecodeError, decode
-from sqlalchemy.orm import Session
-from starlette import status
-
 from app.core.config import config
 from app.core.security import oauth2_scheme, verify_password
 from app.database.crud.user import create_user, get_user_by_email
 from app.database.schemas.user import UserCreate, UserSchema
 from app.database.session import get_db
+from fastapi import Depends, HTTPException
+from jwt import DecodeError, decode
+from sqlalchemy.orm import Session
+from starlette import status
 
 
 async def get_current_user(db=Depends(get_db), token: str = Depends(oauth2_scheme)):

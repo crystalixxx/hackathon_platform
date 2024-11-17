@@ -1,10 +1,9 @@
 from typing import List, Optional
 
+from app.database.schemas.team import TeamSchema
 from pydantic import AnyUrl
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, relationship
-
-from app.database.schemas.team import TeamSchema
 
 from . import base, user
 
