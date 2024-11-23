@@ -37,13 +37,21 @@ class Team(base.BaseModel):
 class TeamTag(base.ManyToManyBase):
     __tablename__ = "t_team_tag"
 
-    team_id: int = Column(Integer, ForeignKey("t_team.id"), nullable=False)
-    user_tag_id: int = Column(Integer, ForeignKey("t_user_tag.id"), nullable=False)
+    team_id: int = Column(
+        Integer, ForeignKey("t_team.id"), nullable=False, primary_key=True
+    )
+    user_tag_id: int = Column(
+        Integer, ForeignKey("t_user_tag.id"), nullable=False, primary_key=True
+    )
 
 
 class TeamUser(base.ManyToManyBase):
     __tablename__ = "t_team_user"
 
-    team_id: int = Column(Integer, ForeignKey("t_team.id"), nullable=False)
-    user_id: int = Column(Integer, ForeignKey("t_user.id"), nullable=False)
+    team_id: int = Column(
+        Integer, ForeignKey("t_team.id"), nullable=False, primary_key=True
+    )
+    user_id: int = Column(
+        Integer, ForeignKey("t_user.id"), nullable=False, primary_key=True
+    )
     role_name: str = Column(String(256), nullable=False)

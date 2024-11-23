@@ -20,6 +20,7 @@ pydantic-settings = "^2.6.0"
 pyjwt = "^2.9.0"
 passlib = "^1.7.4"
 pre-commit = "^4.0.1"
+psycopg2-binary = "^2.9.10"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
@@ -29,3 +30,8 @@ black = "^24.10.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.roof]
+exclude = [
+    "services/user_and_teams_service/app/alembic/versions",
+]
