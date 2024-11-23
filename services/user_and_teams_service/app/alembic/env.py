@@ -2,7 +2,7 @@ from logging.config import fileConfig
 
 from alembic import context
 from app.core.config import config as app_config
-from app.main import metadate
+from app.main import metadata
 from sqlalchemy import engine_from_config, pool
 
 # this is the Alembic Config object, which provides

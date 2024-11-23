@@ -33,8 +33,6 @@ def client(session: Session):
         return session
 
     def override_get_current_superadmin():
-        db = get_session_override()
-
         user = User(
             id=1,
             username="test@gmail.com",
