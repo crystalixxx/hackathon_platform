@@ -17,3 +17,4 @@ jobs:
       - name: Start testing
         run: make run-tests
         working-directory: ./services/user_and_teams_service
+    needs: build
