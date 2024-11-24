@@ -1,0 +1,19 @@
+name: containerized testing
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Build the Docker image
+        run: docker build . --tag backend
+        working-directory: /home/crystal/PyCharm/hackathons_project/services/user_and_teams_service
+  testing:
+    runs-on: ubuntu-latest
+    container: backend
+    steps:
+      - name: Start testing
+        run: make run-tests
+        working-directory: /home/crystal/PyCharm/hackathons_project/services/user_and_teams_service
