@@ -7,14 +7,25 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v4
 
+      - name: Start local Docker registry
+        run: docker run -d -p 5000:5000 --name registry registry:2
+
       - name: Build the Docker image
-        run: docker build . --tag backend
+        run: docker build . --tag localhost:5000/backend
         working-directory: ./services/user_and_teams_service
+
+      - name: Push Docker image to local registry
+        run: docker push localhost:5000/backend
+
   testing:
     runs-on: ubuntu-latest
-    container: backend
+    needs: build
     steps:
+      - name: Pull Docker image from local registry
+        run: docker pull localhost:5000/backend
+
       - name: Start testing
         run: make run-tests
         working-directory: ./services/user_and_teams_service
-    needs: build
+        container:
+          image: localhost:5000/backend
