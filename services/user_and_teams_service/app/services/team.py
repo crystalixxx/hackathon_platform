@@ -1,5 +1,6 @@
 from app.core.utils.unit_of_work import AbstractUnitOfWork
 from app.database.schemas.team import TeamCreate, TeamUpdate
+from fastapi import HTTPException, status
 
 
 class TeamService:
@@ -51,41 +52,39 @@ class TeamService:
 
     async def add_member(self, uow: AbstractUnitOfWork, team_id: int, user_id: int):
         async with uow:
-            team = await uow.team.find_one({"id": team_id})
-
-            if not team:
-                raise ValueError()
+            await self.get_team_by_id(uow, team_id)
 
             user = await uow.user.find_one({"id": user_id})
 
             if not user:
-                raise ValueError()
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
-            if user_id in team["members"]:
-                raise ValueError()
+            exist = await uow.team_user.find_one(
+                {"team_id": team_id, "user_id": user_id}
+            )
 
-            team["members"].append(user_id)
-            await uow.team.update({"id": team_id}, {"members": team["members"]})
+            if exist:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+
+            await uow.team_user.add_one({"team_id": team_id, "user_id": user_id})
 
     async def remove_member(self, uow: AbstractUnitOfWork, team_id: int, user_id: int):
         async with uow:
-            old_team = await uow.team.find_one({"id": team_id})
+            await self.get_team_by_id(uow, team_id)
 
-            if not old_team:
-                raise ValueError()
+            exist = await uow.team_user.find_one(
+                {"team_id": team_id, "user_id": user_id}
+            )
 
-            if user_id not in old_team.get("members"):
-                raise ValueError()
+            if not exist:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
-            updated_team = [member for member in old_team["members"] if member != user_id]
+            await uow.team_user.delete({"team_id": team_id, "user_id": user_id})
 
-            await uow.team.update({"id": team_id}, {"members": updated_team})
-
-    async def get_members(self, uow: AbstractUnitOfWork, team_id: int):
+    async def get_team_members(self, uow: AbstractUnitOfWork, team_id: int):
         async with uow:
-            team = await uow.team.find_one({"id": team_id})
+            await self.get_team_by_id(uow, team_id)
 
-            if not team:
-                raise ValueError()
+            members = await uow.team_user.find_all({"team_id": team_id})
 
-            return team.get("members")
+            return [member["user_id"] for member in members]
