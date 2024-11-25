@@ -21,6 +21,7 @@ pyjwt = "^2.9.0"
 passlib = "^1.7.4"
 pre-commit = "^4.0.1"
 psycopg2-binary = "^2.9.10"
+python-dotenv = "^1.0.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"

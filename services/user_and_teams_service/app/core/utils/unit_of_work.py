@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from app.core.utils.repositories import AbstractRepository
+from app.core.utils.repository import AbstractRepository
 from app.database.session import get_db
 from app.repositories import (
     RequestRepository,

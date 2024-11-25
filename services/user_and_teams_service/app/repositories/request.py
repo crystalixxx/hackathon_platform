@@ -1,4 +1,4 @@
-from app.core.repository import SQLAlchemyRepository
+from app.core.utils import SQLAlchemyRepository
 from app.database.models.request import Request
 
 
