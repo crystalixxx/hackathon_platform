@@ -49,7 +49,7 @@ class TeamService:
     async def update_team(
         self, uow: AbstractUnitOfWork, team: TeamUpdate, team_id: int
     ):
-        old_team = await self.get_team_by_id(uow, team_id)
+        await self.get_team_by_id(uow, team_id)
 
         team_dict = team.model_dump(exclude_none=True)
 
@@ -65,7 +65,7 @@ class TeamService:
             return updated_team
 
     async def delete_team(self, uow: AbstractUnitOfWork, team_id: int):
-        team = await self.get_team_by_id(uow, team_id)
+        await self.get_team_by_id(uow, team_id)
 
         async with uow:
             deleted_team = await uow.team.delete({"id": team_id})
@@ -79,7 +79,7 @@ class TeamService:
             return deleted_team
 
     async def add_member(self, uow: AbstractUnitOfWork, team_id: int, user_id: int):
-        team = await self.get_team_by_id(uow, team_id)
+        await self.get_team_by_id(uow, team_id)
 
         async with uow:
             user = await uow.user.find_one({"id": user_id})
@@ -103,7 +103,7 @@ class TeamService:
             await uow.team_user.add_one({"team_id": team_id, "user_id": user_id})
 
     async def remove_member(self, uow: AbstractUnitOfWork, team_id: int, user_id: int):
-        team = await self.get_team_by_id(uow, team_id)
+        await self.get_team_by_id(uow, team_id)
 
         async with uow:
             exist = await uow.team_user.find_one(
@@ -119,7 +119,7 @@ class TeamService:
             await uow.team_user.delete({"team_id": team_id, "user_id": user_id})
 
     async def get_team_members(self, uow: AbstractUnitOfWork, team_id: int):
-        team = await self.get_team_by_id(uow, team_id)
+        await self.get_team_by_id(uow, team_id)
 
         async with uow:
             members = await uow.team_user.find_all({"team_id": team_id})
