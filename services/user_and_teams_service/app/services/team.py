@@ -48,3 +48,44 @@ class TeamService:
         async with uow:
             team = await uow.team.delete({"id": team_id})
             return team
+
+    async def add_member(self, uow: AbstractUnitOfWork, team_id: int, user_id: int):
+        async with uow:
+            team = await uow.team.find_one({"id": team_id})
+
+            if not team:
+                raise ValueError()
+
+            user = await uow.user.find_one({"id": user_id})
+
+            if not user:
+                raise ValueError()
+
+            if user_id in team["members"]:
+                raise ValueError()
+
+            team["members"].append(user_id)
+            await uow.team.update({"id": team_id}, {"members": team["members"]})
+
+    async def remove_member(self, uow: AbstractUnitOfWork, team_id: int, user_id: int):
+        async with uow:
+            old_team = await uow.team.find_one({"id": team_id})
+
+            if not old_team:
+                raise ValueError()
+
+            if user_id not in old_team.get("members"):
+                raise ValueError()
+
+            updated_team = [member for member in old_team["members"] if member != user_id]
+
+            await uow.team.update({"id": team_id}, {"members": updated_team})
+
+    async def get_members(self, uow: AbstractUnitOfWork, team_id: int):
+        async with uow:
+            team = await uow.team.find_one({"id": team_id})
+
+            if not team:
+                raise ValueError()
+
+            return team.get("members")
