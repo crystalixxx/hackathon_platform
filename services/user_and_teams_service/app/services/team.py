@@ -112,7 +112,7 @@ class TeamService:
 
             if not exist:
                 raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
+                    status_code=status.HTTP_404_NOT_FOUND,
                     detail=f"Пользователь #{user_id} не в команде.",
                 )
 
