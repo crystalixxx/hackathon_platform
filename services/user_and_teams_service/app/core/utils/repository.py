@@ -1,12 +1,14 @@
 from abc import ABC, abstractmethod
 
+from sqlalchemy import insert
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 
 class AbstractRepository(ABC):
     @abstractmethod
-    async def add_one(self, data: dict) -> int:
+    async def add_one(self, data: dict):
         raise NotImplementedError
 
     @abstractmethod
@@ -22,7 +24,7 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, filter_data: dict, data: dict) -> int:
+    async def update(self, filter_data: dict, data: dict):
         raise NotImplementedError
 
     @abstractmethod
@@ -34,13 +36,13 @@ class SQLAlchemyRepository(AbstractRepository):
     model = None
 
     def __init__(self, session: AsyncSession):
-        self.session = session
+        self.session: AsyncSession = session
 
-    async def add_one(self, data: dict) -> int:
-        response = self.model(**data)
-        self.session.add(response)
+    async def add_one(self, data: dict):
+        stmt = insert(self.model).values(**data).returning(self.model.id)
+        response = await self.session.execute(stmt)
 
-        return response.id
+        return response.scalar_one()
 
     async def find_all(self):
         stmt = select(self.model)
@@ -66,23 +68,29 @@ class SQLAlchemyRepository(AbstractRepository):
 
         return result
 
-    async def update(self, filter_data: dict, data: dict) -> int:
-        model_object = await self.find_one(**filter_data)
+    async def update(self, filter_data: dict, data: dict):
+        query = select(self.model).filter_by(**filter_data)
+        result = await self.session.execute(query)
+
+        try:
+            model_object = result.scalars().one()
+        except NoResultFound:
+            return None
 
         for key, value in data.items():
             setattr(model_object, key, value)
 
         self.session.add(model_object)
-
-        return model_object.id
+        return model_object.to_read_model()
 
     async def delete(self, filter_data: dict):
-        model_object = await self.find_one(**filter_data)
+        query = select(self.model).filter_by(**filter_data)
+        result = await self.session.execute(query)
+
+        try:
+            model_object = result.scalars().one()
+        except NoResultFound:
+            return None
 
         await self.session.delete(model_object)
-
-        output = model_object.scalar_one_or_none()
-        if output is not None:
-            output = output.to_read_model()
-
-        return output
+        return model_object.to_read_model()
