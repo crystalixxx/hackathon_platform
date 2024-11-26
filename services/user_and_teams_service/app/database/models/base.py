@@ -1,5 +1,3 @@
-from datetime import datetime, timezone
-
 from sqlalchemy import Column, DateTime, Integer, func
 from sqlalchemy.orm import declarative_base
 

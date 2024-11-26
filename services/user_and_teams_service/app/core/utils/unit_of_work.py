@@ -8,7 +8,6 @@ from app.repositories import (
     UserRepository,
     UserTagRepository,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class AbstractUnitOfWork(ABC):
