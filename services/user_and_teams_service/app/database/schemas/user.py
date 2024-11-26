@@ -2,6 +2,8 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr
 
+from .user_tag import UserTagSchema
+
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -18,14 +20,16 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(BaseModel):
-    email: Optional[EmailStr]
-    first_name: Optional[str]
-    second_name: Optional[str]
-    role: Optional[str]
-    link_cv: Optional[str]
-    password: Optional[str]
+    email: Optional[EmailStr] = None
+    first_name: Optional[str] = None
+    second_name: Optional[str] = None
+    role: Optional[str] = None
+    link_cv: Optional[str] = None
+    password: Optional[str] = None
 
 
 class UserSchema(UserBase):
     id: int
     hashed_password: str
+
+    tags: Optional[list[UserTagSchema]] = None
