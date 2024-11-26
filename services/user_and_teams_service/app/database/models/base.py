@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, Integer
+from sqlalchemy import Column, DateTime, Integer, func
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -9,11 +9,11 @@ Base = declarative_base()
 class ManyToManyBase(Base):
     __abstract__ = True
 
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(
         DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        server_default=func.now(),
+        server_onupdate=func.now(),
     )
 
 
