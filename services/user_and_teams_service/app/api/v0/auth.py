@@ -2,13 +2,14 @@ from datetime import timedelta
 from typing import Annotated
 
 from api.dependencies import UOWAlchemyDep
-from app.core.config import config
-from app.core.security import create_access_token
-from app.database.schemas.user import UserCreate
-from app.services.user import UserServices
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
+
+from app.core.config import config
+from app.core.security import create_access_token
+from app.database.schemas.user import UserCreate
+from app.services.user import UserService
 
 auth_router = APIRouter()
 
@@ -18,7 +19,7 @@ async def sign_up(uow: UOWAlchemyDep, user: UserCreate):
     user_dict = user.model_dump(exclude_none=True)
     del user_dict["role"]
 
-    new_user = await UserServices().sign_up_new_user(uow, **user_dict)
+    new_user = await UserService().sign_up_new_user(uow, **user_dict)
 
     if not new_user:
         raise HTTPException(
@@ -41,11 +42,11 @@ async def sign_up(uow: UOWAlchemyDep, user: UserCreate):
 async def login(
     uow: UOWAlchemyDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ):
-    user = await UserServices().authenticate_user(
+    access = await UserService().authenticate_user(
         uow, form_data.username, form_data.password
     )
 
-    if not user:
+    if not access:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
@@ -55,7 +56,7 @@ async def login(
     access_token_expires = timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     access_token = create_access_token(
-        data={"sub": user.email, "permissions": "user"},
+        data={"sub": form_data.username, "permissions": "user"},
         expires_delta=access_token_expires,
     )
 
