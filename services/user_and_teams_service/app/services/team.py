@@ -100,7 +100,7 @@ class TeamService:
                     detail=f"Пользователь #{user_id} уже в команде.",
                 )
 
-            await uow.team_user.add_one({"team_id": team_id, "user_id": user_id})
+            return await uow.team_user.add_one({"team_id": team_id, "user_id": user_id})
 
     async def remove_member(self, uow: AbstractUnitOfWork, team_id: int, user_id: int):
         await self.get_team_by_id(uow, team_id)
@@ -116,12 +116,10 @@ class TeamService:
                     detail=f"Пользователь #{user_id} не в команде.",
                 )
 
-            await uow.team_user.delete({"team_id": team_id, "user_id": user_id})
+            return await uow.team_user.delete({"team_id": team_id, "user_id": user_id})
 
     async def get_team_members(self, uow: AbstractUnitOfWork, team_id: int):
         await self.get_team_by_id(uow, team_id)
 
         async with uow:
-            members = await uow.team_user.find_all({"team_id": team_id})
-
-            return [member["user_id"] for member in members]
+            return await uow.team_user.find_all({"team_id": team_id})

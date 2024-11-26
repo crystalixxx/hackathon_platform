@@ -5,6 +5,7 @@ from app.database.session import get_db
 from app.repositories import (
     RequestRepository,
     TeamRepository,
+    TeamUserRepository,
     UserRepository,
     UserTagRepository,
 )
@@ -44,6 +45,7 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
         self.team = TeamRepository(self.session)
         self.request = RequestRepository(self.session)
         self.user_tags = UserTagRepository(self.session)
+        self.team_user = TeamUserRepository(self.session)
 
         return super().__aenter__()
 
