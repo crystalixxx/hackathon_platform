@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from starlette import status
 
-from app.core.security import get_hashed_password, oauth2_scheme, verify_password
+from app.core.security import get_hashed_password, verify_password
 from app.core.utils.unit_of_work import AbstractUnitOfWork
 from app.database.schemas.user import UserCreate, UserUpdate
 from app.database.schemas.user_tag import UserTagCreate, UserTagUpdate

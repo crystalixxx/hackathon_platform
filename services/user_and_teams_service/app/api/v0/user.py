@@ -4,7 +4,7 @@ from starlette import status
 
 from app.core.auth import get_current_user
 from app.database.schemas.user import UserCreate, UserSchema, UserUpdate
-from app.database.schemas.user_tag import UserTagCreate, UserTagSchema
+from app.database.schemas.user_tag import UserTagCreate
 from app.services.user import UserService
 
 user_router = APIRouter()
