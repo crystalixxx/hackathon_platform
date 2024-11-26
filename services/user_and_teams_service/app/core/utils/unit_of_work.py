@@ -18,11 +18,13 @@ class AbstractUnitOfWork(ABC):
     def __init__(self, session_factory):
         raise NotImplementedError
 
+    @abstractmethod
     async def __aenter__(self):
-        return self
+        raise NotImplementedError
 
+    @abstractmethod
     async def __aexit__(self, *args):
-        await self.rollback()
+        raise NotImplementedError
 
     @abstractmethod
     async def commit(self):
@@ -34,25 +36,33 @@ class AbstractUnitOfWork(ABC):
 
 
 class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
-    def __init__(self, session_factory=get_db):
-        self.session_factory = session_factory
+    def __init__(self):
+        self.session_factory = get_db
 
     async def __aenter__(self):
-        self.session: AsyncSession = await self.session_factory()
+        self.session = await anext(self.session_factory())
 
-        self.user = UserRepository(self.session)
+        self.users = UserRepository(self.session)
         self.team = TeamRepository(self.session)
         self.request = RequestRepository(self.session)
         self.user_tags = UserTagRepository(self.session)
 
-        return super().__aenter__()
+        return self
 
-    async def __aexit__(self, *args):
-        await super().__aexit__(*args)
-        await self.session.close()
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        try:
+            if exc_type is not None:
+                await self.rollback()
+            else:
+                await self.commit()
+        finally:
+            if self.session:
+                await self.session.close()
 
     async def commit(self):
-        await self.session.commit()
+        if self.session:
+            await self.session.commit()
 
     async def rollback(self):
-        await self.session.rollback()
+        if self.session:
+            await self.session.rollback()

@@ -53,7 +53,11 @@ class SQLAlchemyRepository(AbstractRepository):
         stmt = select(self.model).filter_by(**filter_data)
         result = await self.session.execute(stmt)
 
-        return result.scalar_one().to_read_model()
+        output = result.scalar_one_or_none()
+        if output is not None:
+            output = output.to_read_model()
+
+        return output
 
     async def find_some(self, filter_data: dict):
         stmt = select(self.model).filter_by(**filter_data)
@@ -77,4 +81,8 @@ class SQLAlchemyRepository(AbstractRepository):
 
         await self.session.delete(model_object)
 
-        return model_object.scalar_one().to_read_model()
+        output = model_object.scalar_one_or_none()
+        if output is not None:
+            output = output.to_read_model()
+
+        return output
