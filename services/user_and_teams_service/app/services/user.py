@@ -1,15 +1,22 @@
-from app.core.config import config
+from fastapi import HTTPException
+from starlette import status
+
 from app.core.security import get_hashed_password, oauth2_scheme, verify_password
 from app.core.utils.unit_of_work import AbstractUnitOfWork
 from app.database.schemas.user import UserCreate, UserUpdate
 from app.database.schemas.user_tag import UserTagCreate, UserTagUpdate
-from fastapi import Depends, HTTPException
-from jwt import DecodeError, decode
-from starlette import status
 
 
 class UserService:
     async def create_user(self, uow: AbstractUnitOfWork, user: UserCreate):
+        exists_user = await self.get_user_by_email(uow, user.email)
+
+        if exists_user:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="User with this email already exists",
+            )
+
         user_dict = user.model_dump(exclude_none=True)
         user_dict["hashed_password"] = get_hashed_password(user.password)
         del user_dict["password"]
@@ -44,30 +51,6 @@ class UserService:
 
         return True
 
-    async def get_current_user(
-        self, uow: AbstractUnitOfWork, token: str = Depends(oauth2_scheme)
-    ):
-        credentials_exception = HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-        try:
-            payload = decode(token, config.SECURITY_KEY, algorithms=[config.ALGORITHM])
-            email = payload.get("sub")
-
-            if email is None:
-                raise credentials_exception
-        except DecodeError:
-            raise credentials_exception
-
-        user = await self.get_user_by_email(uow, email)
-        if user is None:
-            raise credentials_exception
-
-        return user
-
     async def get_users(self, uow: AbstractUnitOfWork):
         async with uow:
             users = await uow.users.find_all()
@@ -86,14 +69,17 @@ class UserService:
     async def update_user(
         self, uow: AbstractUnitOfWork, user: UserUpdate, user_id: int
     ):
-        old_user = self.get_user_by_id(uow, user_id)
+        old_user = await self.get_user_by_id(uow, user_id)
 
         if old_user is None:
-            return None
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User with this id does not exist",
+            )
 
-        user_dict = user.model_dump(exclude_none=True)
+        user_dict = user.model_dump(exclude_unset=True)
 
-        if user_dict["password"] is not None:
+        if user_dict.get("password") is not None:
             setattr(
                 user_dict, "hashed_password", get_hashed_password(user_dict["password"])
             )
