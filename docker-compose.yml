@@ -58,8 +58,6 @@ services:
     command: [ "redis-server", "--appendonly", "yes" ]
     volumes:
       - redis_data:/data
-    labels:
-      - "traefik.http.routers.redis.rule=Host(`redis.localhost`)"
 
 volumes:
   db-data:
