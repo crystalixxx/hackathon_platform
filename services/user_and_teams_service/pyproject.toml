@@ -23,6 +23,7 @@ pre-commit = "^4.0.1"
 psycopg2-binary = "^2.9.10"
 python-dotenv = "^1.0.1"
 redis = "4.6.0"
+aioredis = "^2.0.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
