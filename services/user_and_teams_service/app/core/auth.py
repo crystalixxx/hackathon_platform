@@ -1,10 +1,10 @@
-from core.utils.unit_of_work import SqlAlchemyUnitOfWork
 from fastapi import Depends, HTTPException
 from jwt import DecodeError, decode
 from starlette import status
 
 from app.core.config import config
 from app.core.security import oauth2_scheme
+from app.core.utils.unit_of_work import SqlAlchemyUnitOfWork
 from app.services.user import UserService
 
 

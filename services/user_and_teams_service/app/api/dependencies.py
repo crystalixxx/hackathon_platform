@@ -1,6 +1,7 @@
 from typing import Annotated
 
-from core.utils.unit_of_work import AbstractUnitOfWork, SqlAlchemyUnitOfWork
 from fastapi import Depends
+
+from app.core.utils.unit_of_work import AbstractUnitOfWork, SqlAlchemyUnitOfWork
 
 UOWAlchemyDep = Annotated[AbstractUnitOfWork, Depends(SqlAlchemyUnitOfWork)]

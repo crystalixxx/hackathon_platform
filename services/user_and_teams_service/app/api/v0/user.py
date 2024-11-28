@@ -1,7 +1,7 @@
-from api.dependencies import UOWAlchemyDep
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 
+from app.api.dependencies import UOWAlchemyDep
 from app.core.auth import get_current_user
 from app.database.schemas.user import UserCreate, UserSchema, UserUpdate
 from app.database.schemas.user_tag import UserTagCreate

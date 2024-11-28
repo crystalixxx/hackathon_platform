@@ -1,11 +1,11 @@
 from datetime import timedelta
 from typing import Annotated
 
-from api.dependencies import UOWAlchemyDep
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
 
+from app.api.dependencies import UOWAlchemyDep
 from app.core.config import config
 from app.core.security import create_access_token
 from app.database.schemas.user import UserCreate

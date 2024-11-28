@@ -1,7 +1,8 @@
-from api.v0.main import main_v0_router
-from database.models.base import Base
 from fastapi import FastAPI
 from uvicorn import run
+
+from app.api.v0.main import main_v0_router
+from app.database.models.base import Base
 
 metadate = Base.metadata
 

@@ -23,6 +23,8 @@ pre-commit = "^4.0.1"
 psycopg2-binary = "^2.9.10"
 python-dotenv = "^1.0.1"
 asyncpg = "^0.30.0"
+aiosqlite = "^0.20.0"
+pytest-asyncio = "^0.24.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
