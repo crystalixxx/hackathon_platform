@@ -10,14 +10,6 @@ class UserRepository(SQLAlchemyRepository):
         super().__init__()
         self.redis_client = RedisClient()
 
-    # async def create_user(self, user_dict: dict):
-    # user = await super().add_one(user_dict)
-    # return user
-
-    # async def get_users(self):
-    # users = await super().find_all()
-    # return users
-
     async def get_user_by_id(self, user_id: int):
         cache_key = f"user:{user_id}"
         cached_user = self.redis_client.get(cache_key)
@@ -31,10 +23,6 @@ class UserRepository(SQLAlchemyRepository):
             self.redis_client.set(cache_key, user, expire=120)
 
         return user
-
-    # async def get_user_by_email(self, email: str):
-    # user = await super().find_one({"email": email})
-    # return user
 
     async def update_user(self, user_id: int, update_dict: dict):
         user = await super().update({"id": user_id}, update_dict)
