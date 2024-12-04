@@ -1,7 +1,11 @@
 from abc import ABC, abstractmethod
+from hashlib import sha256
+from json import dumps
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
+from .cache import AbstractCache, RedisCache
 
 
 class AbstractRepository(ABC):
@@ -78,3 +82,79 @@ class SQLAlchemyRepository(AbstractRepository):
         await self.session.delete(model_object)
 
         return model_object.scalar_one().to_read_model()
+
+
+class CachedRepository(AbstractRepository):
+    def __init__(self, repository: AbstractRepository, cache: AbstractCache):
+        self.repository = repository
+        self.cache = cache
+
+    async def __generate_hash(self, method_name: str, params: dict) -> str:
+        key = f"{self.repository.__class__.__name__}:{method_name}:{dumps(params, sort_keys=True)}"
+        return sha256(key.encode()).hexdigest()
+
+    async def add_one(self, data: dict) -> int:
+        result = await self.repository.add_one(data)
+
+        key = await self.__generate_hash("find_all", {})
+        await self.cache.delete(key)
+
+        return result
+
+    async def find_all(self):
+        key = await self.__generate_hash("find_all", {})
+        expected_result = await self.cache.get(key)
+
+        if expected_result is not None:
+            return expected_result
+
+        result = await self.repository.find_all()
+        await self.cache.set(key, result)
+
+        return result
+
+    async def find_one(self, filter_data: dict):
+        key = await self.__generate_hash("find_one", filter_data)
+        expected_result = await self.cache.get(key)
+
+        if expected_result is not None:
+            return expected_result
+
+        result = await self.repository.find_one(filter_data)
+        await self.cache.set(key, result)
+
+        return result
+
+    async def find_some(self, filter_data: dict):
+        key = await self.__generate_hash("find_some", filter_data)
+        expected_result = await self.cache.get(key)
+
+        if expected_result is not None:
+            return expected_result
+
+        result = await self.repository.find_some(filter_data)
+        await self.cache.set(key, result)
+
+        return result
+
+    async def update(self, filter_data: dict, data: dict) -> int:
+        result = await self.repository.update(data, filter_data)
+
+        key_one = await self.__generate_hash("find_one", filter_data)
+        key_many = await self.__generate_hash("find_all", {})
+
+        await self.cache.delete(key_one)
+        await self.cache.delete(key_many)
+
+        return result
+
+    async def delete(self, filter_data: dict):
+        result = await self.repository.delete(filter_data)
+
+        key_one = await self.__generate_hash("find_one", filter_data)
+        key_many = await self.__generate_hash("find_all", {})
+
+        await self.cache.delete(key_one)
+        await self.cache.delete(key_many)
+
+        return result
