@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 
+from aioredis import Redis
+from app.core.utils import SQLAlchemyRepository
+from app.core.utils.cache import RedisCache
 from app.core.utils.repository import AbstractRepository
 from app.database.session import get_db
 from app.repositories import (
@@ -33,17 +36,23 @@ class AbstractUnitOfWork(ABC):
         raise NotImplementedError
 
 
-class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
-    def __init__(self, session_factory=get_db):
+class CachedSQLAlchemyUnitOfWork(AbstractUnitOfWork):
+    def __init__(self, redis: Redis, session_factory=get_db):
         self.session_factory = session_factory
+        self.redis = redis
+
+    def get_repository(self, repo_class):
+        return repo_class(
+            repository=SQLAlchemyRepository(self.session), cache=RedisCache(self.redis)
+        )
 
     async def __aenter__(self):
         self.session: AsyncSession = await self.session_factory()
 
-        self.user = UserRepository(self.session)
-        self.team = TeamRepository(self.session)
-        self.request = RequestRepository(self.session)
-        self.user_tags = UserTagRepository(self.session)
+        self.user = self.get_repository(UserRepository)
+        self.team = self.get_repository(TeamRepository)
+        self.request = self.get_repository(RequestRepository)
+        self.user_tags = self.get_repository(UserTagRepository)
 
         return super().__aenter__()
 

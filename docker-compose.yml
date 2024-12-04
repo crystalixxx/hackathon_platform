@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   traefik:
     image: traefik:v2.4
@@ -32,11 +30,14 @@ services:
       POSTGRES_HOST: user_and_teams_service_postgresql
       POSTGRES_PORT: 5432
       POSTGRES_NAME: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     labels:
       - "traefik.http.routers.user_and_teams_service.rule=Host(`user_and_teams_service.localhost`)"
       - "traefik.http.services.user_and_teams_service.loadbalancer.server.port=8000"
     depends_on:
       - "user_and_teams_service_postgresql"
+      - "user_and_teams_service_redis"
 
   user_and_teams_service_postgresql:
     image: postgres
@@ -49,5 +50,14 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data:cached
 
+  user_and_teams_service_redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    command: [ "redis-server", "--appendonly", "yes" ]
+    volumes:
+      - redis_data:/data
+
 volumes:
   db-data:
+  redis_data:

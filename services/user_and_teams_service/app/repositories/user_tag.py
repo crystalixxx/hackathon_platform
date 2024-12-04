@@ -1,6 +1,6 @@
-from app.core.utils.repository import SQLAlchemyRepository
+from app.core.utils.repository import CachedRepository
 from app.database.models.user import UserTag
 
 
-class UserTagRepository(SQLAlchemyRepository):
+class UserTagRepository(CachedRepository):
     model = UserTag
