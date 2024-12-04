@@ -50,9 +50,8 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data:cached
 
-  redis:
+  user_and_teams_service_redis:
     image: redis:latest
-    container_name: redis_instance
     ports:
       - "6379:6379"
     command: [ "redis-server", "--appendonly", "yes" ]

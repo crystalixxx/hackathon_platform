@@ -5,7 +5,7 @@ from json import dumps
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from .cache import AbstractCache, RedisCache
+from .cache import AbstractCache
 
 
 class AbstractRepository(ABC):
