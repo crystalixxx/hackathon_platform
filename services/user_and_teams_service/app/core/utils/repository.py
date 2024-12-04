@@ -85,8 +85,12 @@ class SQLAlchemyRepository(AbstractRepository):
 
 
 class CachedRepository(AbstractRepository):
+    model = None
+
     def __init__(self, repository: AbstractRepository, cache: AbstractCache):
         self.repository = repository
+        self.repository.model = self.model
+
         self.cache = cache
 
     async def __generate_hash(self, method_name: str, params: dict) -> str:
@@ -109,7 +113,8 @@ class CachedRepository(AbstractRepository):
             return expected_result
 
         result = await self.repository.find_all()
-        await self.cache.set(key, result)
+        if result is not None:
+            await self.cache.set(key, result)
 
         return result
 
@@ -121,7 +126,8 @@ class CachedRepository(AbstractRepository):
             return expected_result
 
         result = await self.repository.find_one(filter_data)
-        await self.cache.set(key, result)
+        if result is not None:
+            await self.cache.set(key, result)
 
         return result
 
@@ -133,12 +139,13 @@ class CachedRepository(AbstractRepository):
             return expected_result
 
         result = await self.repository.find_some(filter_data)
-        await self.cache.set(key, result)
+        if result is not None:
+            await self.cache.set(key, result)
 
         return result
 
     async def update(self, filter_data: dict, data: dict) -> int:
-        result = await self.repository.update(data, filter_data)
+        result = await self.repository.update(filter_data, data)
 
         key_one = await self.__generate_hash("find_one", filter_data)
         key_many = await self.__generate_hash("find_all", {})
