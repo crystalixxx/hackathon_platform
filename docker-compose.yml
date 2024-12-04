@@ -37,7 +37,7 @@ services:
       - "traefik.http.services.user_and_teams_service.loadbalancer.server.port=8000"
     depends_on:
       - "user_and_teams_service_postgresql"
-      - "redis"
+      - "user_and_teams_service_redis"
 
   user_and_teams_service_postgresql:
     image: postgres
