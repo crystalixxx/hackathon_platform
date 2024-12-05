@@ -8,7 +8,9 @@ from app.core.utils.unit_of_work import SqlAlchemyUnitOfWork
 from app.services.user import UserService
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(
+    uow=Depends(SqlAlchemyUnitOfWork), token: str = Depends(oauth2_scheme)
+):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -24,7 +26,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     except DecodeError:
         raise credentials_exception
 
-    uow = SqlAlchemyUnitOfWork()
     user = await UserService().get_user_by_email(uow, email)
 
     if user is None:
