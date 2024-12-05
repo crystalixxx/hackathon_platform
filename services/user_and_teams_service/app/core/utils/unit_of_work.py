@@ -1,4 +1,8 @@
 from abc import ABC, abstractmethod
+from typing import Annotated
+
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.utils.repository import AbstractRepository
 from app.database.session import get_db
@@ -35,8 +39,8 @@ class AbstractUnitOfWork(ABC):
 
 
 class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
-    def __init__(self):
-        self.session_factory = get_db
+    def __init__(self, session_factory=Depends(get_db)):
+        self.session_factory = session_factory
 
     async def __aenter__(self):
         self.session = await anext(self.session_factory())
