@@ -13,8 +13,11 @@ from .models.base import Base
 
 
 async def get_db():
-    async with sessionmanager.session() as session:
-        yield session
+    async def get_db_session():
+        async with sessionmanager.session() as session:
+            yield session
+
+    return get_db_session
 
 
 class DatabaseSessionManager:
@@ -22,7 +25,7 @@ class DatabaseSessionManager:
         self._engine: AsyncEngine | None = None
         self._sessionmaker: async_sessionmaker | None = None
 
-    async def init(self, host: str):
+    def init(self, host: str):
         self._engine = create_async_engine(host)
         self._sessionmaker = async_sessionmaker(autocommit=False, bind=self._engine)
 

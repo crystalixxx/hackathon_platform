@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Annotated
+from typing import Annotated, Callable
 
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
