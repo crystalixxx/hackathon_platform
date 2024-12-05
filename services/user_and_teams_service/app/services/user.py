@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from starlette import status
+from starlette.status import HTTP_404_NOT_FOUND
 
 from app.core.security import get_hashed_password, verify_password
 from app.core.utils.unit_of_work import AbstractUnitOfWork
@@ -103,6 +104,15 @@ class UserService:
 
     async def create_user_tag(self, uow: AbstractUnitOfWork, user_tag: UserTagCreate):
         user_tag_dict = user_tag.model_dump(exclude_none=True)
+        existing_tag = await self.get_user_tag_by_name(
+            uow, user_tag_dict["user_id"], user_tag_dict["name"]
+        )
+
+        if existing_tag is not None:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Tag with this name already exists",
+            )
 
         async with uow:
             user_tag = await uow.user_tags.add_one(user_tag_dict)
@@ -132,10 +142,23 @@ class UserService:
         tag_name: str,
     ):
         user_tag_dict = user_tag.model_dump(exclude_none=True)
-        old_user_tag = self.get_user_tag_by_name(uow, user_id, tag_name)
+        old_user_tag = await self.get_user_tag_by_name(uow, user_id, tag_name)
 
         if old_user_tag is None:
-            return None
+            raise HTTPException(
+                status_code=HTTP_404_NOT_FOUND,
+                detail="Tag with this name doesn't found",
+            )
+
+        existing_tag = await self.get_user_tag_by_name(
+            uow, user_id, user_tag_dict["name"]
+        )
+
+        if existing_tag is not None:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Tag with this name already exists",
+            )
 
         async with uow:
             user_tag = await uow.user_tags.update(
