@@ -9,6 +9,8 @@ from starlette.testclient import TestClient
 from app import init_app
 from app.database.session import get_db, sessionmanager
 
+# tried to use this - https://praciano.com.br/fastapi-and-async-sqlalchemy-20-with-pytest-done-right.html
+
 test_db = factories.postgresql_noproc()
 
 
