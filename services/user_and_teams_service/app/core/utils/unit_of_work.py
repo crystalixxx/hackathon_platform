@@ -40,6 +40,7 @@ class AbstractUnitOfWork(ABC):
     async def rollback(self):
         raise NotImplementedError
 
+
 class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
     def __init__(self, session_factory=Depends(get_db)):
         self.session_factory = session_factory

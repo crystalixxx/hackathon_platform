@@ -35,6 +35,7 @@ class AbstractRepository(ABC):
     async def delete(self, filter_data: dict):
         raise NotImplementedError
 
+
 class SQLAlchemyRepository(AbstractRepository):
     model = None
 
