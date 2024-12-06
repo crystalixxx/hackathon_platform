@@ -1,6 +1,6 @@
-from app.core.utils import SQLAlchemyRepository
+from app.core.utils.repository import CachedRepository
 from app.database.models.request import Request
 
 
-class RequestRepository(SQLAlchemyRepository):
+class RequestRepository(CachedRepository):
     model = Request
