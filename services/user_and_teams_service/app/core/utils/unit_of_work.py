@@ -1,10 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Annotated, Callable
 
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from aioredis import Redis
 from app.core.utils import SQLAlchemyRepository
 from app.core.utils.cache import RedisCache
 from app.core.utils.repository import AbstractRepository
@@ -15,6 +12,8 @@ from app.repositories import (
     UserRepository,
     UserTagRepository,
 )
+
+from database import redis
 
 
 class AbstractUnitOfWork(ABC):
