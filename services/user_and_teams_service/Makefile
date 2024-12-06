@@ -1,2 +1,2 @@
 run-tests:
-	pytest  -v -s
+	pytest -v -s

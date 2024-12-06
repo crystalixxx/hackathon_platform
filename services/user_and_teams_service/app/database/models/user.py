@@ -1,10 +1,11 @@
 from typing import List, Optional
 
-from app.database.schemas.user import UserSchema
-from app.database.schemas.user_tag import UserTagSchema
 from pydantic import AnyUrl, EmailStr
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, relationship
+
+from app.database.schemas.user import UserSchema
+from app.database.schemas.user_tag import UserTagSchema
 
 from . import base, team
 
@@ -19,7 +20,7 @@ class User(base.BaseModel):
     role: Optional[str] = Column(String(256), default=None)
     link_cv: Optional[AnyUrl] = Column(String(256), default=None)
 
-    tags: Mapped[List["UserTag"]] = relationship("UserTag")
+    tags: Mapped[List["UserTag"]] = relationship("UserTag", lazy="selectin")
     teams: Mapped[List["team.Team"]] = relationship(
         "Team", secondary="t_team_user", back_populates="users"
     )
@@ -33,6 +34,7 @@ class User(base.BaseModel):
             hashed_password=self.hashed_password,
             role=self.role,
             link_cv=self.link_cv,
+            tags=self.tags,
         )
 
 

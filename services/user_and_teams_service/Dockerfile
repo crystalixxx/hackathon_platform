@@ -11,8 +11,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-#ENV PYTHONPATH=/app
+ENV PYTHONPATH=/app
 
 EXPOSE 8000:8000
 
-ENTRYPOINT ["python", "app/main.py"]
+CMD ["python", "app/main.py"]
