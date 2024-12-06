@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
-
 from fastapi import Depends
-
+from database import redis
 from app.core.utils import SQLAlchemyRepository
 from app.core.utils.cache import RedisCache
 from app.core.utils.repository import AbstractRepository
@@ -12,8 +11,6 @@ from app.repositories import (
     UserRepository,
     UserTagRepository,
 )
-
-from database import redis
 
 
 class AbstractUnitOfWork(ABC):
