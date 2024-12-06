@@ -105,3 +105,4 @@ virtualenv==20.28.0
 watchfiles==1.0.0
 websockets==14.1
 wheel==0.45.1
+redis==4.6.0
