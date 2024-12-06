@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict
 class TeamBase(BaseModel):
     title: str
     description: Optional[str]
-    icon_link: Optional[str]
+    icon_url: Optional[str]
     is_looking_for_members: bool
 
     model_config = ConfigDict(from_attributes=True)
@@ -19,7 +19,7 @@ class TeamCreate(TeamBase):
 class TeamUpdate(BaseModel):
     title: Optional[str]
     description: Optional[str]
-    icon_link: Optional[str]
+    icon_url: Optional[str]
     is_looking_for_members: Optional[bool]
     captain_id: Optional[int]
 
