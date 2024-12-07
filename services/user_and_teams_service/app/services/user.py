@@ -28,9 +28,9 @@ class UserService:
             return user_id
 
     async def sign_up_new_user(self, uow: AbstractUnitOfWork, user: UserCreate):
-        user = await self.get_user_by_email(uow, user.email)
+        existing_user = await self.get_user_by_email(uow, user.email)
 
-        if user:
+        if existing_user is not None:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="User with this email already exists",
