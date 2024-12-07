@@ -121,5 +121,5 @@
 - **Контейнеризация**: Docker + Docker Compose.
 - **CI/CD**: GitHub Actions.
 
-![Попугаи на хакатоне](26683997-5d17-4e5a-a651-4971ea7bccd3.webp)
+![Попугаи на хакатоне](images/26683997-5d17-4e5a-a651-4971ea7bccd3.webp)
 ---
