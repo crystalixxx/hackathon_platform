@@ -4,12 +4,12 @@ from starlette import status
 
 from app.core.config import config
 from app.core.security import oauth2_scheme
-from app.core.utils.unit_of_work import SqlAlchemyUnitOfWork
+from app.core.utils.unit_of_work import CachedSQLAlchemyUnitOfWork
 from app.services.user import UserService
 
 
 async def get_current_user(
-    uow=Depends(SqlAlchemyUnitOfWork), token: str = Depends(oauth2_scheme)
+    uow=Depends(CachedSQLAlchemyUnitOfWork), token: str = Depends(oauth2_scheme)
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
