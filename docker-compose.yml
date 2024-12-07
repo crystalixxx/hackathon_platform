@@ -31,8 +31,10 @@ services:
       POSTGRES_HOST: user_and_teams_service_postgresql
       POSTGRES_PORT: 5432
       POSTGRES_NAME: postgres
-      REDIS_HOST: redis
+      REDIS_HOST: user_and_teams_service_redis
       REDIS_PORT: 6379
+      REDIS_USER: admin
+      REDIS_PASSWORD: admin
     labels:
       - "traefik.http.routers.user_and_teams_service.rule=Host(`user_and_teams_service.localhost`)"
       - "traefik.http.services.user_and_teams_service.loadbalancer.server.port=8000"
@@ -53,11 +55,19 @@ services:
 
   user_and_teams_service_redis:
     image: redis:latest
+    environment:
+      REDIS_PASSWORD: "admin"
+      REDIS_USER: "admin"
+      REDIS_USER_PASSWORD: "admin"
     ports:
       - "6379:6379"
-    command: [ "redis-server", "--appendonly", "yes" ]
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: unless-stopped
     volumes:
       - redis_data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    tty: true
+    stdin_open: true
 
 volumes:
   db-data:
