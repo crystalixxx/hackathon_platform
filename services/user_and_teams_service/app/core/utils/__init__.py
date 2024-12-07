@@ -1,9 +1,9 @@
 from .repository import AbstractRepository, SQLAlchemyRepository
-from .unit_of_work import AbstractUnitOfWork, SqlAlchemyUnitOfWork
+from .unit_of_work import AbstractUnitOfWork, CachedSQLAlchemyUnitOfWork
 
 __all__ = [
     "AbstractRepository",
     "AbstractUnitOfWork",
     "SQLAlchemyRepository",
-    "SqlAlchemyUnitOfWork",
+    "CachedSQLAlchemyUnitOfWork",
 ]

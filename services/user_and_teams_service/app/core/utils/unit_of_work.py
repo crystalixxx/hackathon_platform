@@ -1,9 +1,13 @@
 from abc import ABC, abstractmethod
 
-from aioredis import Redis
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.config import config
 from app.core.utils import SQLAlchemyRepository
 from app.core.utils.cache import RedisCache
 from app.core.utils.repository import AbstractRepository
+from app.database.redis import RedisSingleton
 from app.database.session import get_db
 from app.repositories import (
     RequestRepository,
@@ -11,7 +15,6 @@ from app.repositories import (
     UserRepository,
     UserTagRepository,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class AbstractUnitOfWork(ABC):
@@ -37,7 +40,11 @@ class AbstractUnitOfWork(ABC):
 
 
 class CachedSQLAlchemyUnitOfWork(AbstractUnitOfWork):
-    def __init__(self, redis: Redis, session_factory=get_db):
+    def __init__(
+        self,
+        redis=RedisSingleton.get_instance(config.redis_connection_url),
+        session_factory=Depends(get_db),
+    ):
         self.session_factory = session_factory
         self.redis = redis
 
@@ -47,9 +54,9 @@ class CachedSQLAlchemyUnitOfWork(AbstractUnitOfWork):
         )
 
     async def __aenter__(self):
-        self.session: AsyncSession = await self.session_factory()
+        self.session: AsyncSession = await anext(self.session_factory())
 
-        self.user = self.get_repository(UserRepository)
+        self.users = self.get_repository(UserRepository)
         self.team = self.get_repository(TeamRepository)
         self.request = self.get_repository(RequestRepository)
         self.user_tags = self.get_repository(UserTagRepository)

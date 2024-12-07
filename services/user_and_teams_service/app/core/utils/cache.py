@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from json import dumps, loads
 
-from aioredis import Redis
+from redis.asyncio import Redis
 
 
 class AbstractCache(ABC):

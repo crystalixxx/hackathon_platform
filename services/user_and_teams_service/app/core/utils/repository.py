@@ -130,7 +130,7 @@ class CachedRepository(AbstractRepository):
 
         result = await self.repository.find_all()
         if result is not None:
-            await self.cache.set(key, result)
+            await self.cache.set(key, [r.model_dump() for r in result])
 
         return result
 
@@ -143,7 +143,7 @@ class CachedRepository(AbstractRepository):
 
         result = await self.repository.find_one(filter_data)
         if result is not None:
-            await self.cache.set(key, result)
+            await self.cache.set(key, result.model_dump())
 
         return result
 
@@ -156,7 +156,7 @@ class CachedRepository(AbstractRepository):
 
         result = await self.repository.find_some(filter_data)
         if result is not None:
-            await self.cache.set(key, result)
+            await self.cache.set(key, [r.model_dump() for r in result])
 
         return result
 
