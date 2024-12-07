@@ -1,5 +1,3 @@
-from asyncio import as_completed
-
 from fastapi import HTTPException, status
 
 from app.core.utils.unit_of_work import AbstractUnitOfWork
