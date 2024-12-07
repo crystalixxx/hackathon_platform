@@ -84,5 +84,7 @@
 - **Контейнеризация**: Docker + Docker Compose.
 - **CI/CD**: GitHub Actions + Kubernetes.
 
+## Инструкция по деплою
+
 ![Попугаи на хакатоне](images/26683997-5d17-4e5a-a651-4971ea7bccd3.webp)
 ---
