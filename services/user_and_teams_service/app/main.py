@@ -1,8 +1,9 @@
 from uvicorn import run
+
 from app import init_app
 from app.database.models.base import Base
 
-metadate = Base.metadata
+metadata = Base.metadata
 
 app = init_app()
 
