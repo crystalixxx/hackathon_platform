@@ -7,8 +7,12 @@ from . import base
 class Request(base.BaseModel):
     __tablename__ = "t_request"
 
-    request_team_id: int = Column(Integer, ForeignKey("t_team.id"), nullable=False)
-    user_id: int = Column(Integer, ForeignKey("t_user.id"), nullable=False)
+    request_team_id: int = Column(
+        Integer, ForeignKey("t_team.id", ondelete="CASCADE"), nullable=False
+    )
+    user_id: int = Column(
+        Integer, ForeignKey("t_user.id", ondelete="CASCADE"), nullable=False
+    )
     sent_by_team: bool = Column(Boolean, nullable=False)
     is_ok: bool = Column(Boolean, nullable=False, default=False)
 

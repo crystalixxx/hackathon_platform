@@ -41,7 +41,9 @@ class User(base.BaseModel):
 class UserTag(base.BaseModel):
     __tablename__ = "t_user_tag"
 
-    user_id: int = Column(Integer, ForeignKey("t_user.id"), nullable=False)
+    user_id: int = Column(
+        Integer, ForeignKey("t_user.id", ondelete="CASCADE"), nullable=False
+    )
     name: str = Column(String(256), nullable=False)
 
     def to_read_model(self) -> UserTagSchema:
