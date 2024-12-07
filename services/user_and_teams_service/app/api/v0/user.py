@@ -17,7 +17,7 @@ async def get_users(uow: UOWAlchemyDep):
     return await UserService().get_users(uow)
 
 
-@user_router.get("/id/{user_id}", response_model=UserSchema)
+@user_router.get("/id/{user_id}", response_model=UserSchema | None)
 async def get_user_by_id(uow: UOWAlchemyDep, user_id: int):
     return await UserService().get_user_by_id(uow, user_id)
 

@@ -60,6 +60,12 @@ class UserService:
     async def get_user_by_id(self, uow: AbstractUnitOfWork, user_id: int):
         async with uow:
             user = await uow.users.find_one({"id": user_id})
+
+            if not user:
+                raise HTTPException(
+                    status_code=HTTP_404_NOT_FOUND, detail="User not found"
+                )
+
             return user
 
     async def get_user_by_email(self, uow: AbstractUnitOfWork, email: str):
@@ -81,9 +87,7 @@ class UserService:
         user_dict = user.model_dump(exclude_unset=True)
 
         if user_dict.get("password") is not None:
-            setattr(
-                user_dict, "hashed_password", get_hashed_password(user_dict["password"])
-            )
+            user_dict["hashed_password"] = get_hashed_password(user_dict["password"])
             del user_dict["password"]
 
         async with uow:

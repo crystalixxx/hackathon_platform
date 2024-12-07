@@ -96,7 +96,7 @@ async def update_team(
 async def delete_team(
     uow: UOWAlchemyDep, team_id: int, current_user=Depends(get_current_user)
 ):
-    team = await TeamService().get_team_by_id(team_id, uow)
+    team = await TeamService().get_team_by_id(uow, team_id)
 
     if current_user.role not in ["user"] and team.captain_id != current_user.id:
         raise HTTPException(
