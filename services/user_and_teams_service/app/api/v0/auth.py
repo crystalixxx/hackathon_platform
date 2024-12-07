@@ -16,17 +16,9 @@ auth_router = APIRouter()
 
 @auth_router.post("/sign_up")
 async def sign_up(uow: UOWAlchemyDep, user: UserCreate):
-    user_dict = user.model_dump(exclude_none=True)
-    del user_dict["role"]
-
-    new_user = await UserService().sign_up_new_user(uow, **user_dict)
-
-    if not new_user:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Account already exists",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+    # user_dict = user.model_dump(exclude_none=True)
+    new_user = await UserService().sign_up_new_user(uow, user)
+    new_user = await UserService().get_user_by_id(uow, new_user)
 
     access_token_expires = timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)
 

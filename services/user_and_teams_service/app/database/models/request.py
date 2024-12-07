@@ -1,5 +1,6 @@
-from app.database.schemas.request import RequestSchema
 from sqlalchemy import Boolean, Column, ForeignKey, Integer
+
+from app.database.schemas.request import RequestSchema
 
 from . import base
 
@@ -22,4 +23,9 @@ class Request(base.BaseModel):
             user_id=self.user_id,
             sent_by_team=self.sent_by_team,
             is_ok=self.is_ok,
+            request_team_id=self.request_team_id,
         )
+
+    @classmethod
+    def convert_scheme(cls):
+        return RequestSchema

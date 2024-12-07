@@ -1,6 +1,6 @@
-from app.core.utils.repository import SQLAlchemyRepository
+from app.core.utils.repository import CachedRepository
 from app.database.models.team import TeamUser
 
 
-class TeamUserRepository(SQLAlchemyRepository):
+class TeamUserRepository(CachedRepository):
     model = TeamUser

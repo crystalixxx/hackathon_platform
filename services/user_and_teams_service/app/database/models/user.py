@@ -22,7 +22,7 @@ class User(base.BaseModel):
 
     tags: Mapped[List["UserTag"]] = relationship("UserTag", lazy="selectin")
     teams: Mapped[List["team.Team"]] = relationship(
-        "Team", secondary="t_team_user", back_populates="users"
+        "Team", secondary="t_team_user", back_populates="users", lazy="selectin"
     )
 
     def to_read_model(self) -> UserSchema:
@@ -36,6 +36,10 @@ class User(base.BaseModel):
             link_cv=self.link_cv,
             tags=self.tags,
         )
+
+    @classmethod
+    def convert_scheme(cls):
+        return UserSchema
 
 
 class UserTag(base.BaseModel):
@@ -52,3 +56,7 @@ class UserTag(base.BaseModel):
             user_id=self.user_id,
             name=self.name,
         )
+
+    @classmethod
+    def convert_scheme(cls):
+        return UserTagSchema

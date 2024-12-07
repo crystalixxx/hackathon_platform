@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict
 
 
 class RequestBase(BaseModel):
+    request_team_id: int
     user_id: int
     sent_by_team: bool
     is_ok: bool

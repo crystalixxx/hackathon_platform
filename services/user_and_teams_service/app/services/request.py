@@ -1,6 +1,7 @@
+from fastapi import HTTPException, status
+
 from app.core.utils.unit_of_work import AbstractUnitOfWork
 from app.database.schemas.request import RequestCreate
-from fastapi import HTTPException, status
 
 
 class RequestService:
@@ -8,46 +9,43 @@ class RequestService:
         request_data = request.model_dump(exclude_none=True)
 
         async with uow:
-            request = uow.request.add_one(request_data)
+            request = await uow.request.add_one(request_data)
             return request
 
     async def get_request_by_id(self, uow: AbstractUnitOfWork, request_id: int):
         async with uow:
-            request = uow.request.find_one({"id": request_id})
+            request = await uow.request.find_one({"id": request_id})
             return request
 
     async def get_requests_of_user(self, uow: AbstractUnitOfWork, user_id: int):
         async with uow:
-            request = uow.request.find_one({"user_id": user_id})
+            request = await uow.request.find_some({"user_id": user_id})
             return request
 
-    async def get_request_of_team(self, uow: AbstractUnitOfWork, team_id: int):
+    async def get_requests_of_team(self, uow: AbstractUnitOfWork, team_id: int):
         async with uow:
-            request = uow.request.find_one({"team_id": team_id})
+            request = await uow.request.find_some({"request_team_id": team_id})
             return request
 
     async def get_requests_sent_by_team(self, uow: AbstractUnitOfWork, team_id: int):
         async with uow:
-            requests = await uow.request.find_all(
+            requests = await uow.request.find_some(
                 {"request_team_id": team_id, "sent_by_team": True}
             )
             return requests
 
     async def get_requests_to_team(self, uow: AbstractUnitOfWork, team_id: int):
         async with uow:
-            requests = await uow.request.find_all(
+            requests = await uow.request.find_some(
                 {"request_team_id": team_id, "sent_by_team": False}
             )
             return requests
 
     async def delete_request(self, uow: AbstractUnitOfWork, request_id):
-        request = self.get_request_by_id(uow, request_id)
-
-        if request is None:
-            return None
+        await self.get_request_by_id(uow, request_id)
 
         async with uow:
-            request = uow.request.delete({"id": request_id})
+            request = await uow.request.delete({"id": request_id})
             return request
 
     async def approve_request(self, uow: AbstractUnitOfWork, request_id: int):
@@ -75,5 +73,4 @@ class RequestService:
                     detail=f"Реквест #{request_id} не найден.",
                 )
 
-            await uow.request.delete({"id": request_id})
-            return {"message": f"Реквест #{request_id} отклонен."}
+            return await uow.request.delete({"id": request_id})
