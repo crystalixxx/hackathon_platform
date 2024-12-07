@@ -110,13 +110,16 @@ class CachedRepository(AbstractRepository):
         self.cache = cache
 
     async def __generate_hash(self, method_name: str, params: dict) -> str:
-        key = f"{self.repository.__class__.__name__}:{method_name}:{dumps(params, sort_keys=True)}"
+        key = f"{self.model.__name__}:{method_name}:{dumps(params, sort_keys=True)}"
+        print(key)
         return sha256(key.encode()).hexdigest()
 
     async def add_one(self, data: dict) -> int:
         result = await self.repository.add_one(data)
 
         key = await self.__generate_hash("find_all", {})
+        await self.cache.delete(key)
+
         key = await self.__generate_hash("find_some", {})
         await self.cache.delete(key)
 

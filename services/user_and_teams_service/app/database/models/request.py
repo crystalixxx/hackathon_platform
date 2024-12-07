@@ -23,6 +23,7 @@ class Request(base.BaseModel):
             user_id=self.user_id,
             sent_by_team=self.sent_by_team,
             is_ok=self.is_ok,
+            request_team_id=self.request_team_id,
         )
 
     @classmethod
