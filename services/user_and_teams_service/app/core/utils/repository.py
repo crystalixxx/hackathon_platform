@@ -117,6 +117,7 @@ class CachedRepository(AbstractRepository):
         result = await self.repository.add_one(data)
 
         key = await self.__generate_hash("find_all", {})
+        key = await self.__generate_hash("find_some", {})
         await self.cache.delete(key)
 
         return result
@@ -126,7 +127,7 @@ class CachedRepository(AbstractRepository):
         expected_result = await self.cache.get(key)
 
         if expected_result is not None:
-            return expected_result
+            return [self.model.convert_scheme().parse_obj(r) for r in expected_result]
 
         result = await self.repository.find_all()
         if result is not None:
@@ -139,7 +140,7 @@ class CachedRepository(AbstractRepository):
         expected_result = await self.cache.get(key)
 
         if expected_result is not None:
-            return expected_result
+            return self.model.convert_scheme().parse_obj(expected_result)
 
         result = await self.repository.find_one(filter_data)
         if result is not None:
@@ -148,15 +149,15 @@ class CachedRepository(AbstractRepository):
         return result
 
     async def find_some(self, filter_data: dict):
-        key = await self.__generate_hash("find_some", filter_data)
-        expected_result = await self.cache.get(key)
-
-        if expected_result is not None:
-            return expected_result
+        # key = await self.__generate_hash("find_some", filter_data)
+        # expected_result = await self.cache.get(key)
+        #
+        # if expected_result is not None:
+        #     return [self.model.convert_scheme().parse_obj(r) for r in expected_result]
 
         result = await self.repository.find_some(filter_data)
-        if result is not None:
-            await self.cache.set(key, [r.model_dump() for r in result])
+        # if result is not None:
+        #     await self.cache.set(key, [r.model_dump() for r in result])
 
         return result
 
