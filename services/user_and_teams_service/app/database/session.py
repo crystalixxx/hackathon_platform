@@ -15,7 +15,11 @@ from .models.base import Base
 async def get_db():
     async def get_db_session():
         async with sessionmanager.session() as session:
-            yield session
+            try:
+                yield session
+            except Exception:
+                if session:
+                    await session.close()
 
     return get_db_session
 
@@ -27,7 +31,9 @@ class DatabaseSessionManager:
 
     def init(self, host: str):
         self._engine = create_async_engine(host)
-        self._sessionmaker = async_sessionmaker(autocommit=False, bind=self._engine)
+        self._sessionmaker = async_sessionmaker(
+            autocommit=False, bind=self._engine, expire_on_commit=False
+        )
 
     async def close(self):
         if self._engine is None:
