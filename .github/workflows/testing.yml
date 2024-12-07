@@ -1,0 +1,38 @@
+name: testing
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Ruff installation
+        run: curl -LsSf https://astral.sh/ruff/install.sh | sh
+
+      - name: lint running
+        run: ruff check
+
+#      - name: Set up Python 3.12
+#        uses: actions/setup-python@v5
+#        with:
+#          python-version: "3.12"
+#          cache: pip
+#
+#      - name: Install dependencies in Users And Teams Service
+#        run: |
+#          python -m pip install --upgrade pip
+#          pip install poetry
+#          poetry install
+#          poetry run pip install coverage
+#        working-directory: ./services/user_and_teams_service
+#
+#      - name: Testing Users And Teams Service
+#        run: |
+#          poetry run coverage run -m pytest  -v -s
+#        working-directory: ./services/user_and_teams_service/app
+#
+#      - name: Generate Coverage Report
+#        run: |
+#          poetry run coverage report -m
+#        working-directory: ./services/user_and_teams_service/app
