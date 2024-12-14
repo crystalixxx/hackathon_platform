@@ -1,9 +1,12 @@
+from typing import Optional
 from pydantic import BaseModel, ConfigDict
+from .location import LocationSchema
+from .event import EventSchema
 
 
 class EventLocationBase(BaseModel):
-    event_id: int
-    location_id: int
+    event: Optional[EventSchema] = None
+    location: Optional[LocationSchema] = None
 
     model_config = ConfigDict(from_attributes=True)
 
