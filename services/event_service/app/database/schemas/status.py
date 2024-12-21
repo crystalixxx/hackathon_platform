@@ -21,19 +21,11 @@ class StatusSchema(StatusBase):
     id: int
 
 
-class StatusEventBase(BaseModel):
+class StatusEventSchema(BaseModel):
     event_id: int
     status_id: int
 
 
-class StatusEventSchema(StatusEventBase):
-    pass
-
-
-class StatusTrackBase(BaseModel):
+class StatusTrackSchema(BaseModel):
     event_id: int
     status_id: int
-
-
-class StatusTrackSchema(StatusTrackBase):
-    pass
