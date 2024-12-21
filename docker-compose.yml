@@ -51,7 +51,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db-data:/var/lib/postgresql/data:cached
+      - user_and_teams_db_data:/var/lib/postgresql/data:cached
 
   user_and_teams_service_redis:
     image: redis:latest
@@ -86,11 +86,11 @@ services:
       ACCESS_TOKEN_EXPIRE_MINUTES: 30
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
-      POSTGRES_HOST: user_and_teams_service_postgresql
-      POSTGRES_PORT: 5433
+      POSTGRES_HOST: events_service_postgresql
+      POSTGRES_PORT: 5432
       POSTGRES_NAME: postgres
-      REDIS_HOST: user_and_teams_service_redis
-      REDIS_PORT: 6380
+      REDIS_HOST: events_service_redis
+      REDIS_PORT: 6379
       REDIS_USER: admin
       REDIS_PASSWORD: admin
     labels:
@@ -109,7 +109,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - db-data:/var/lib/postgresql/data:cached
+      - events_service_db_data:/var/lib/postgresql/data:cached
 
   events_service_redis:
     image: redis:latest
@@ -128,5 +128,6 @@ services:
     stdin_open: true
 
 volumes:
-  db-data:
+  user_and_teams_db_data:
+  events_service_db_data:
   redis_data:
