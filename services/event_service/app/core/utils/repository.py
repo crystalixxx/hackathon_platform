@@ -7,7 +7,7 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from .cache import AbstractCache
+from services.event_service.app.core.utils.cache import AbstractCache
 
 
 class AbstractRepository(ABC):
