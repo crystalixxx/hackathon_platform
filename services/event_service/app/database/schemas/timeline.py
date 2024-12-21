@@ -1,31 +1,31 @@
-from typing import Optional
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict
 
 
 class TimelineBase(BaseModel):
     title: str
-    description: Optional[str]
-    deadline: Optional[str]
+    description: str
+    deadline: datetime
     is_blocking: bool
+    track_id: int
+    timeline_status_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class TimelineCreate(TimelineBase):
-    track_id: int
-    t_timeline_status_id: int
+    pass
 
 
 class TimelineUpdate(BaseModel):
-    title: Optional[str]
-    description: Optional[str]
-    deadline: Optional[str]
-    is_blocking: Optional[bool]
-    track_id: Optional[int]
-    t_timeline_status_id: Optional[int]
+    title: str | None = None
+    description: str | None = None
+    deadline: datetime | None = None
+    is_blocking: bool | None = None
+    track_id: int | None = None
+    t_timeline_status_id: int | None = None
 
 
 class TimelineSchema(TimelineBase):
     id: int
-    track_id: int
-    t_timeline_status_id: int

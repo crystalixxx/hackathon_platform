@@ -1,5 +1,4 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional
 
 
 class StatusBase(BaseModel):
@@ -14,8 +13,8 @@ class StatusCreate(StatusBase):
 
 
 class StatusUpdate(BaseModel):
-    name: Optional[str]
-    text: Optional[str]
+    name: str | None = None
+    text: str | None = None
 
 
 class StatusSchema(StatusBase):

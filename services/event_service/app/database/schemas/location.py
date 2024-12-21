@@ -12,7 +12,7 @@ class LocationCreate(LocationBase):
 
 
 class LocationUpdate(BaseModel):
-    title: str
+    title: str | None = None
 
 
 class LocationSchema(LocationBase):
