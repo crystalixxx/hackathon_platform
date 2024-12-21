@@ -1,14 +1,12 @@
-from typing import Optional
 from pydantic import BaseModel, ConfigDict
-from .event import EventSchema
 
 
 class EventPrizeBase(BaseModel):
     place: int
     primary_prize: str
-    description: Optional[str]
-    icon_url: Optional[str]
-    event: Optional[EventSchema] = None
+    description: str
+    icon_url: str
+    event_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -18,11 +16,11 @@ class EventPrizeCreate(EventPrizeBase):
 
 
 class EventPrizeUpdate(BaseModel):
-    place: Optional[int]
-    primary_prize: Optional[str]
-    description: Optional[str]
-    icon_url: Optional[str]
-    event_id: Optional[int]
+    place: int | None = None
+    primary_prize: str | None = None
+    description: str | None = None
+    icon_url: str | None = None
+    event_id: int | None = None
 
 
 class EventPrizeSchema(EventPrizeBase):

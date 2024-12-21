@@ -1,4 +1,3 @@
-from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 
@@ -15,9 +14,9 @@ class TrackTeamCreate(TrackTeamBase):
 
 
 class TrackTeamUpdate(BaseModel):
-    track_id: Optional[int]
-    team_id: Optional[int]
-    is_active: Optional[bool]
+    track_id: int | None = None
+    team_id: int | None = None
+    is_active: bool | None = None
 
 
 class TrackTeamSchema(TrackTeamBase):

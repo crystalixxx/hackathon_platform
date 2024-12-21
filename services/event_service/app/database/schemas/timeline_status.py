@@ -7,5 +7,13 @@ class TimelineStatusBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class TimelineStatusCreate(TimelineStatusBase):
+    pass
+
+
+class TimelineStatusUpdate(BaseModel):
+    count_num: int | None = None
+
+
 class TimelineStatusSchema(TimelineStatusBase):
     id: int

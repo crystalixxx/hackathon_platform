@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict
 
 
@@ -14,8 +15,8 @@ class DateCreate(DateBase):
 
 
 class DateUpdate(BaseModel):
-    date_start: datetime
-    date_end: datetime
+    date_start: datetime | None = None
+    date_end: datetime | None = None
 
 
 class DateSchema(DateBase):

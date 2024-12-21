@@ -1,12 +1,11 @@
-from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 
 class TrackWinnerBase(BaseModel):
     track_id: int
-    t_track_team_id: int
-    place: Optional[int]
-    is_awardee: Optional[bool]
+    track_team_id: int
+    place: int
+    is_awardee: bool
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -16,10 +15,10 @@ class TrackWinnerCreate(TrackWinnerBase):
 
 
 class TrackWinnerUpdate(BaseModel):
-    track_id: Optional[int]
-    t_track_team_id: Optional[int]
-    place: Optional[int]
-    is_awardee: Optional[bool]
+    track_id: int | None = None
+    t_track_team_id: int | None = None
+    place: int | None = None
+    is_awardee: bool | None = None
 
 
 class TrackWinnerSchema(TrackWinnerBase):
