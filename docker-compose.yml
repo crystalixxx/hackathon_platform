@@ -51,7 +51,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db-data:/var/lib/postgresql/data:cached
+      - user_and_teams_db_data:/var/lib/postgresql/data:cached
 
   user_and_teams_service_redis:
     image: redis:latest
@@ -69,6 +69,65 @@ services:
     tty: true
     stdin_open: true
 
+  events_service:
+    build:
+      context: services/event_service
+      dockerfile: Dockerfile
+    command: python app/main.py
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./services/event_service:/app/:cached
+      - ./.docker/.ipython:/root/.ipython:cached
+    environment:
+      PYTHONPATH: /app
+      SECURITY_KEY: "aa4b452e967bbfcd5b06e39742d3c4d53c61c49a0354fb682c12373070dc8eac892f09b17d9a261514ebb6daa6f1a25d1d302cc5909e8a3f23c7a29e02a5ab74"
+      ALGORITHM: "HS256"
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_HOST: events_service_postgresql
+      POSTGRES_PORT: 5432
+      POSTGRES_NAME: postgres
+      REDIS_HOST: events_service_redis
+      REDIS_PORT: 6379
+      REDIS_USER: admin
+      REDIS_PASSWORD: admin
+    labels:
+      - "traefik.http.routers.events_service.rule=Host(`events_service.localhost`)"
+      - "traefik.http.services.events_service.loadbalancer.server.port=8000"
+    depends_on:
+      - "events_service_postgresql"
+      - "events_service_redis"
+
+  events_service_postgresql:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5433:5432"
+    volumes:
+      - events_service_db_data:/var/lib/postgresql/data:cached
+
+  events_service_redis:
+    image: redis:latest
+    environment:
+      REDIS_PASSWORD: "admin"
+      REDIS_USER: "admin"
+      REDIS_USER_PASSWORD: "admin"
+    ports:
+      - "6380:6379"
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    tty: true
+    stdin_open: true
+
 volumes:
-  db-data:
+  user_and_teams_db_data:
+  events_service_db_data:
   redis_data:
