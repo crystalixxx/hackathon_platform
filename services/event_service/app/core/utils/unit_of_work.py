@@ -69,6 +69,7 @@ class CachedSQLAlchemyUnitOfWork(AbstractUnitOfWork):
         self.date = self.get_repository(DateRepository)
         self.event = self.get_repository(EventRepository)
         self.event_location = self.get_repository(EventLocationRepository)
+        self.event_prize = self.get_repository(EventPrizeRepository)
         self.location = self.get_repository(LocationRepository)
         self.status = self.get_repository(StatusRepository)
         self.status_event = self.get_repository(StatusEventRepository)
