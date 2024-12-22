@@ -1,5 +1,7 @@
 from sqlalchemy import Column, String
-from app.database.schemas.location import LocationSchema
+
+from database.schemas.location import LocationSchema
+
 from . import base
 
 

@@ -1,5 +1,7 @@
 from sqlalchemy import Column, DateTime
-from app.database.schemas.date import DateSchema
+
+from database.schemas.date import DateSchema
+
 from . import base
 
 

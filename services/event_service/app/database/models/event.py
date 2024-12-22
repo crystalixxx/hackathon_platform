@@ -1,5 +1,7 @@
-from sqlalchemy import Column, String, ForeignKey, Text
-from app.database.schemas.event import EventSchema
+from sqlalchemy import Column, ForeignKey, String, Text
+
+from database.schemas.event import EventSchema
+
 from . import base
 
 
