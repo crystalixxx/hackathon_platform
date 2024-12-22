@@ -1,5 +1,7 @@
-from sqlalchemy import Column, String, Boolean, Text, Integer, ForeignKey
-from app.database.schemas.track import TrackSchema
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
+
+from database.schemas.track import TrackSchema
+
 from . import base
 
 
@@ -9,7 +11,9 @@ class Track(base.BaseModel):
     title = Column(String, nullable=False)
     description = Column(Text, nullable=True)
     is_score_based = Column(Boolean, nullable=False, default=False)
-    event_id = Column(Integer, ForeignKey("event.id", ondelete="CASCADE"), nullable=False)
+    event_id = Column(
+        Integer, ForeignKey("event.id", ondelete="CASCADE"), nullable=False
+    )
     date_id = Column(Integer, ForeignKey("date.id", ondelete="CASCADE"), nullable=False)
 
     def to_read_model(self) -> TrackSchema:

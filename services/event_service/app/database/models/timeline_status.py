@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer
-from app.database.schemas.timeline_status import TimelineStatusSchema
+
+from database.schemas.timeline_status import TimelineStatusSchema
+
 from . import base
 
 

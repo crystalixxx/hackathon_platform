@@ -1,5 +1,7 @@
-from sqlalchemy import Column, String, Text, Integer, ForeignKey
-from app.database.schemas.event_prize import EventPrizeSchema
+from sqlalchemy import Column, ForeignKey, Integer, String, Text
+
+from database.schemas.event_prize import EventPrizeSchema
+
 from . import base
 
 
@@ -10,7 +12,9 @@ class EventPrize(base.BaseModel):
     primary_prize = Column(String, nullable=False)
     description = Column(Text, nullable=True)
     icon_url = Column(String, nullable=True)
-    event_id = Column(Integer, ForeignKey("event.id", ondelete="CASCADE"), nullable=False)
+    event_id = Column(
+        Integer, ForeignKey("event.id", ondelete="CASCADE"), nullable=False
+    )
 
     def to_read_model(self) -> EventPrizeSchema:
         return EventPrizeSchema(

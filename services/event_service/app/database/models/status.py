@@ -1,5 +1,7 @@
 from sqlalchemy import Column, String, Text
-from app.database.schemas.status import StatusSchema
+
+from database.schemas.status import StatusSchema
+
 from . import base
 
 
