@@ -1,12 +1,16 @@
-from sqlalchemy import Column, Integer, Boolean, ForeignKey
-from app.database.schemas.track_team import TrackTeamSchema
+from sqlalchemy import Boolean, Column, ForeignKey, Integer
+
+from database.schemas.track_team import TrackTeamSchema
+
 from . import base
 
 
 class TrackTeam(base.BaseModel):
     __tablename__ = "track_team"
 
-    track_id = Column(Integer, ForeignKey("track.id", ondelete="CASCADE"), nullable=False)
+    track_id = Column(
+        Integer, ForeignKey("track.id", ondelete="CASCADE"), nullable=False
+    )
     team_id = Column(Integer, ForeignKey("team.id", ondelete="CASCADE"), nullable=False)
     is_active = Column(Boolean, nullable=False, default=True)
 

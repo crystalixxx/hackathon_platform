@@ -1,5 +1,7 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Text, DateTime
-from app.database.schemas.action_status import AcceptedTeamActionStatusSchema
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
+
+from database.schemas.accepted_team_action_status import AcceptedTeamActionStatusSchema
+
 from . import base
 
 

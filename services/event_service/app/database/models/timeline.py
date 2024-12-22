@@ -1,5 +1,7 @@
-from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, DateTime
-from app.database.schemas.timeline import TimelineSchema
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
+
+from database.schemas.timeline import TimelineSchema
+
 from . import base
 
 
@@ -10,8 +12,12 @@ class Timeline(base.BaseModel):
     description = Column(Text, nullable=True)
     deadline = Column(DateTime, nullable=True)
     is_blocking = Column(Boolean, nullable=False, default=False)
-    track_id = Column(Integer, ForeignKey("track.id", ondelete="CASCADE"), nullable=False)
-    t_timeline_status_id = Column(Integer, ForeignKey("timeline_status.id", ondelete="SET NULL"), nullable=True)
+    track_id = Column(
+        Integer, ForeignKey("track.id", ondelete="CASCADE"), nullable=False
+    )
+    t_timeline_status_id = Column(
+        Integer, ForeignKey("timeline_status.id", ondelete="SET NULL"), nullable=True
+    )
 
     def to_read_model(self) -> TimelineSchema:
         return TimelineSchema(

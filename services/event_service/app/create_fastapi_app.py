@@ -1,17 +1,22 @@
 from contextlib import asynccontextmanager
 
+from api.v0.main import main_v0_router
+from core.config import settings
+from database.session import sessionmanager
 from fastapi import FastAPI
-
-from app.api.v0.main import main_v0_router
-from app.core.config import config
-from app.database.session import sessionmanager
 
 
 def init_app(init_db=True):
     lifespan = None
 
     if init_db:
-        sessionmanager.init(config.database_connection_url)
+        sessionmanager.init(
+            str(settings.db.url),
+            echo=settings.db.echo,
+            echo_pool=settings.db.echo_pool,
+            pool_size=settings.db.pool_size,
+            max_overflow=settings.db.max_overflow,
+        )
 
         @asynccontextmanager
         async def lifespan(app: FastAPI):
