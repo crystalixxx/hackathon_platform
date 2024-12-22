@@ -1,27 +1,63 @@
-from pydantic_settings import BaseSettings
+from typing import Literal
+
+from pydantic import BaseModel, PostgresDsn, RedisDsn
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+LOG_DEFAULT_FORMAT = (
+    "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
+)
 
 
-class Config(BaseSettings):
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_HOST: str
-    POSTGRES_PORT: int
-    POSTGRES_NAME: str
-    SECURITY_KEY: str
-    ALGORITHM: str
-    ACCESS_TOKEN_EXPIRE_MINUTES: int
-    REDIS_HOST: str
-    REDIS_PORT: int
-    REDIS_USER: str
-    REDIS_PASSWORD: str
-
-    @property
-    def database_connection_url(self):
-        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_NAME}"
-
-    @property
-    def redis_connection_url(self):
-        return f"redis://{self.REDIS_USER}:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/0"
+class LoggingConfig(BaseModel):
+    log_level: Literal[
+        "debug",
+        "info",
+        "warning",
+        "error",
+        "critical",
+    ] = "info"
+    log_format: str = LOG_DEFAULT_FORMAT
 
 
-config = Config()
+class APIV0Prefix(BaseModel):
+    pass
+
+
+class APIPrefix(BaseModel):
+    prefix: str = "/api"
+    v0: APIV0Prefix = APIV0Prefix()
+
+
+class DatabaseConfig(BaseModel):
+    url: PostgresDsn
+    echo: bool = False
+    echo_pool: bool = False
+    pool_size: int = 50
+    max_overflow: int = 10
+
+
+class CachingConfig(BaseModel):
+    url: RedisDsn
+
+
+class SecurityConfig(BaseModel):
+    key: str
+    algorithm: str
+    access_token_expires_minutes: int = 30
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+        env_nested_delimiter="__",
+        env_prefix="APP_CONFIG__",
+    )
+    api: APIPrefix = APIPrefix()
+    logging: LoggingConfig = LoggingConfig()
+    db: DatabaseConfig
+    caching: CachingConfig
+    security: SecurityConfig
+
+
+settings = Settings()
