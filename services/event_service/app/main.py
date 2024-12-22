@@ -1,11 +1,10 @@
+from create_fastapi_app import init_app
+from database.models.base import Base
 from uvicorn import run
-
-from app import init_app
-from app.database.models.base import Base
 
 metadata = Base.metadata
 
-app = init_app()
+fastapi = init_app()
 
 if __name__ == "__main__":
-    run("main:app", host="0.0.0.0", reload=True, port=8000)
+    run("main:fastapi", host="0.0.0.0", reload=True, port=8000)
