@@ -81,18 +81,6 @@ services:
       - ./.docker/.ipython:/root/.ipython:cached
     environment:
       PYTHONPATH: /app
-      SECURITY_KEY: "aa4b452e967bbfcd5b06e39742d3c4d53c61c49a0354fb682c12373070dc8eac892f09b17d9a261514ebb6daa6f1a25d1d302cc5909e8a3f23c7a29e02a5ab74"
-      ALGORITHM: "HS256"
-      ACCESS_TOKEN_EXPIRE_MINUTES: 30
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_HOST: events_service_postgresql
-      POSTGRES_PORT: 5432
-      POSTGRES_NAME: postgres
-      REDIS_HOST: events_service_redis
-      REDIS_PORT: 6379
-      REDIS_USER: admin
-      REDIS_PASSWORD: admin
     labels:
       - "traefik.http.routers.events_service.rule=Host(`events_service.localhost`)"
       - "traefik.http.services.events_service.loadbalancer.server.port=8000"
