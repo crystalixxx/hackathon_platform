@@ -3,8 +3,8 @@ version: '3.8'
 services:
   user_and_teams_service:
     build:
-      dockerfile: ./Dockerfile
-    working_dir: /app/tests
+      dockerfile: ../Dockerfile
+    working_dir: /tests
     command: pytest -v -s --postgresql-host=user_and_teams_service_postgresql --postgresql-password=admin --postgresql-user=admin --postgresql-dbname=postgres
     tty: true
     stdin_open: true

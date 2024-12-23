@@ -4,8 +4,8 @@ from pydantic import AnyUrl, EmailStr
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, relationship
 
-from app.database.schemas.user import UserSchema
-from app.database.schemas.user_tag import UserTagSchema
+from database.schemas.user import UserSchema
+from database.schemas.user_tag import UserTagSchema
 
 from . import base, team
 

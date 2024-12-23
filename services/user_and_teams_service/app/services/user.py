@@ -1,11 +1,10 @@
+from core.security import get_hashed_password, verify_password
+from core.utils.unit_of_work import AbstractUnitOfWork
+from database.schemas.user import UserCreate, UserUpdate
+from database.schemas.user_tag import UserTagCreate, UserTagUpdate
 from fastapi import HTTPException
 from starlette import status
 from starlette.status import HTTP_404_NOT_FOUND
-
-from app.core.security import get_hashed_password, verify_password
-from app.core.utils.unit_of_work import AbstractUnitOfWork
-from app.database.schemas.user import UserCreate, UserUpdate
-from app.database.schemas.user_tag import UserTagCreate, UserTagUpdate
 
 
 class UserService:

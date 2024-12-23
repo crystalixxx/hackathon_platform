@@ -1,17 +1,14 @@
-import asyncio
 from contextlib import ExitStack
 
 import pytest
+import pytest_asyncio
+from create_fastapi_app import init_app
+from database.session import get_db, sessionmanager
 from pytest_postgresql import factories
 from pytest_postgresql.janitor import DatabaseJanitor
 from starlette.testclient import TestClient
 
-from app import init_app
-from app.database.session import get_db, sessionmanager
-
-# tried to use this - https://praciano.com.br/fastapi-and-async-sqlalchemy-20-with-pytest-done-right.html
-
-test_db = factories.postgresql_noproc()
+test_db = factories.postgresql_proc(port=None, dbname="test_db")
 
 
 @pytest.fixture(autouse=True)
@@ -26,15 +23,8 @@ def client(app):
         yield c
 
 
-@pytest.fixture(scope="session")
-def event_loop(request):
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
-
-
-@pytest.fixture(scope="session", autouse=True)
-async def connection_test(test_db, event_loop):
+@pytest_asyncio.fixture(scope="session", autouse=True)
+async def connection_test(test_db):
     pg_host = test_db.host
     pg_port = test_db.port
     pg_user = test_db.user
@@ -42,7 +32,12 @@ async def connection_test(test_db, event_loop):
     pg_password = test_db.password
 
     with DatabaseJanitor(
-        pg_user, pg_host, pg_port, pg_db, test_db.version, pg_password
+        user=pg_user,
+        host=pg_host,
+        port=pg_port,
+        dbname=pg_db,
+        version=test_db.version,
+        password=pg_password,
     ):
         connection_str = f"postgresql+psycopg://{pg_user}:@{pg_host}:{pg_port}/{pg_db}"
         sessionmanager.init(connection_str)
@@ -50,17 +45,20 @@ async def connection_test(test_db, event_loop):
         await sessionmanager.close()
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest_asyncio.fixture(scope="function", autouse=True)
 async def create_tables(connection_test):
     async with sessionmanager.connect() as connection:
         await sessionmanager.drop_all(connection)
         await sessionmanager.create_all(connection)
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest_asyncio.fixture(scope="function", autouse=True)
 async def session_override(app, connection_test):
-    async def get_db_override():
-        async with sessionmanager.session() as session:
-            yield session
+    async def db_override_factory():
+        async def get_db_override():
+            async with sessionmanager.session() as session:
+                yield session
 
-    app.dependency_overrides[get_db] = get_db_override
+        return get_db_override
+
+    app.dependency_overrides[get_db] = db_override_factory

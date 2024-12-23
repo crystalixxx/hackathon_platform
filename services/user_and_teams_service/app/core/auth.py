@@ -2,10 +2,10 @@ from fastapi import Depends, HTTPException
 from jwt import DecodeError, decode
 from starlette import status
 
-from app.core.config import config
-from app.core.security import oauth2_scheme
-from app.core.utils.unit_of_work import CachedSQLAlchemyUnitOfWork
-from app.services.user import UserService
+from core.config import settings
+from core.security import oauth2_scheme
+from core.utils.unit_of_work import CachedSQLAlchemyUnitOfWork
+from services.user import UserService
 
 
 async def get_current_user(
@@ -18,7 +18,9 @@ async def get_current_user(
     )
 
     try:
-        payload = decode(token, config.SECURITY_KEY, algorithms=[config.ALGORITHM])
+        payload = decode(
+            token, settings.security.key, algorithms=[settings.security.algorithm]
+        )
         email = payload.get("sub")
 
         if email is None:

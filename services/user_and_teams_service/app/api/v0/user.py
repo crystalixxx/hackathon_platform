@@ -1,13 +1,14 @@
-from typing import Optional
+from typing import Annotated, Optional
 
+from api.dependencies import UOWAlchemyDep
+from core.auth import get_current_user
+from core.utils import AbstractUnitOfWork, CachedSQLAlchemyUnitOfWork
+from database.schemas.user import UserCreate, UserSchema, UserUpdate
+from database.schemas.user_tag import UserTagCreate, UserTagSchema, UserTagUpdate
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 
-from app.api.dependencies import UOWAlchemyDep
-from app.core.auth import get_current_user
-from app.database.schemas.user import UserCreate, UserSchema, UserUpdate
-from app.database.schemas.user_tag import UserTagCreate, UserTagSchema, UserTagUpdate
-from app.services.user import UserService
+from services.user import UserService
 
 user_router = APIRouter()
 
