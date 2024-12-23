@@ -2,7 +2,9 @@ from contextlib import ExitStack
 
 import pytest
 import pytest_asyncio
+from core.auth import get_current_user
 from create_fastapi_app import init_app
+from database.models.user import User
 from database.session import get_db, sessionmanager
 from pytest_postgresql import factories
 from pytest_postgresql.janitor import DatabaseJanitor
@@ -61,4 +63,17 @@ async def session_override(app, connection_test):
 
         return get_db_override
 
+    def override_get_current_superadmin():
+        user = User(
+            id=1,
+            email="test@gmail.com",
+            first_name="Maxim",
+            second_name="Huy",
+            hashed_password="1234576",
+            role="user",
+        )
+
+        return user
+
     app.dependency_overrides[get_db] = db_override_factory
+    app.dependency_overrides[get_current_user] = override_get_current_superadmin
