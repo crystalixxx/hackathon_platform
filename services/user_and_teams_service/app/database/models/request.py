@@ -1,6 +1,6 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer
 
-from app.database.schemas.request import RequestSchema
+from database.schemas.request import RequestSchema
 
 from . import base
 

@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
-from app.database.schemas.user import UserSchema
+from database.schemas.user import UserSchema
 
 
 class TeamBase(BaseModel):

@@ -29,10 +29,23 @@ class DatabaseSessionManager:
         self._engine: AsyncEngine | None = None
         self._sessionmaker: async_sessionmaker | None = None
 
-    def init(self, host: str):
-        self._engine = create_async_engine(host)
+    def init(
+        self,
+        url: str,
+        echo: bool = False,
+        echo_pool: bool = False,
+        pool_size: int = 50,
+        max_overflow: int = 10,
+    ):
+        self._engine = create_async_engine(
+            url=url,
+            echo=echo,
+            echo_pool=echo_pool,
+            pool_size=pool_size,
+            max_overflow=max_overflow,
+        )
         self._sessionmaker = async_sessionmaker(
-            autocommit=False, bind=self._engine, expire_on_commit=False
+            bind=self._engine, autocommit=False, autoflush=False, expire_on_commit=False
         )
 
     async def close(self):

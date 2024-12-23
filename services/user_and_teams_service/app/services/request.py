@@ -1,7 +1,6 @@
+from core.utils.unit_of_work import AbstractUnitOfWork
+from database.schemas.request import RequestCreate
 from fastapi import HTTPException, status
-
-from app.core.utils.unit_of_work import AbstractUnitOfWork
-from app.database.schemas.request import RequestCreate
 
 
 class RequestService:

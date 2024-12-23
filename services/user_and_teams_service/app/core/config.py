@@ -1,27 +1,70 @@
-from pydantic_settings import BaseSettings
+from typing import Literal
+
+from dotenv import find_dotenv, load_dotenv
+from pydantic import BaseModel, PostgresDsn, RedisDsn
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+load_dotenv(find_dotenv(".env"))
+
+LOG_DEFAULT_FORMAT = (
+    "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
+)
 
 
-class Config(BaseSettings):
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_HOST: str
-    POSTGRES_PORT: int
-    POSTGRES_NAME: str
-    SECURITY_KEY: str = "709cb22f047a59f492c4d6407e627240e2272bda11ab791c16fb4f4661f7285a95ba6efbc1bbf762cddcc3710a1487f4a3242f21b2d9cd751b3154a452c5a286"
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    REDIS_HOST: str
-    REDIS_PORT: int
-    REDIS_USER: str
-    REDIS_PASSWORD: str
-
-    @property
-    def database_connection_url(self):
-        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_NAME}"
-
-    @property
-    def redis_connection_url(self):
-        return f"redis://{self.REDIS_USER}:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/0"
+class LoggingConfig(BaseModel):
+    log_level: Literal[
+        "debug",
+        "info",
+        "warning",
+        "error",
+        "critical",
+    ] = "info"
+    log_format: str = LOG_DEFAULT_FORMAT
 
 
-config = Config()
+class APIV0Prefix(BaseModel):
+    pass
+
+
+class APIPrefix(BaseModel):
+    prefix: str = "/api"
+    v0: APIV0Prefix = APIV0Prefix()
+
+
+class DatabaseConfig(BaseModel):
+    url: PostgresDsn
+    # = PostgresDsn("postgresql+asyncpg://admin:admin@events_service_postgresql:5432/postgres")
+    echo: bool = False
+    echo_pool: bool = False
+    pool_size: int = 50
+    max_overflow: int = 10
+
+
+class CachingConfig(BaseModel):
+    url: RedisDsn
+    # = RedisDsn("redis://admin:admin@user_and_teams_service_redis:6379/0")
+
+
+class SecurityConfig(BaseModel):
+    key: str
+    # = "aa4b452e967bbfcd5b06e39742d3c4d53c61c49a0354fb682c12373070dc8eac892f09b17d9a261514ebb6daa6f1a25d1d302cc5909e8a3f23c7a29e02a5ab74"
+    algorithm: str
+    # = "HS256"
+    access_token_expires_minutes: int = 30
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+        env_nested_delimiter="__",
+        env_prefix="APP_CONFIG__",
+    )
+    api: APIPrefix = APIPrefix()
+    logging: LoggingConfig = LoggingConfig()
+    db: DatabaseConfig
+    caching: CachingConfig
+    security: SecurityConfig
+
+
+settings = Settings()

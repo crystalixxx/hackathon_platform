@@ -1,21 +1,24 @@
 from abc import ABC, abstractmethod
+from threading import Thread
 
+import fakeredis
+from database.redis import RedisSingleton
+from database.session import get_db
+from fakeredis import TcpFakeServer
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.core.config import config
-from app.core.utils import SQLAlchemyRepository
-from app.core.utils.cache import RedisCache
-from app.core.utils.repository import AbstractRepository
-from app.database.redis import RedisSingleton
-from app.database.session import get_db
-from app.repositories import (
+from repositories import (
     RequestRepository,
     TeamRepository,
     TeamUserRepository,
     UserRepository,
     UserTagRepository,
 )
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from core.config import settings
+from core.utils import SQLAlchemyRepository
+from core.utils.cache import RedisCache
+from core.utils.repository import AbstractRepository
 
 
 class AbstractUnitOfWork(ABC):
@@ -46,7 +49,7 @@ class CachedSQLAlchemyUnitOfWork(AbstractUnitOfWork):
         session_factory=Depends(get_db),
     ):
         self.session_factory = session_factory
-        self.redis = RedisSingleton.get_instance(config.redis_connection_url)
+        self.redis = fakeredis.FakeAsyncRedis()
 
     def get_repository(self, repo_class):
         return repo_class(
