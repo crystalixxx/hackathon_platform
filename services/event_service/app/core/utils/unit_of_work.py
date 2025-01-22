@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from database.redis import RedisSingleton
 from database.session import get_db
 from fastapi import Depends
+from repositories.event import EventRepository
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import CachingConfig
@@ -49,6 +50,8 @@ class CachedSQLAlchemyUnitOfWork(AbstractUnitOfWork):
 
     async def __aenter__(self):
         self.session: AsyncSession = await anext(self.session_factory())
+
+        self.events = self.get_repository(EventRepository)
 
         return await super().__aenter__()
 
