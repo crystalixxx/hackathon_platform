@@ -3,3 +3,9 @@ http_server:
   address: "event_service:8081"
   timeout: 10s
   idle_timeout: 60s
+sql_database:
+  url: "postgresql://admin:admin@user_and_teams_service_postgresql:5432/postgres"
+  echo: false
+  echo_pool: false
+  pool_size: 50
+  max_overflow: 10
