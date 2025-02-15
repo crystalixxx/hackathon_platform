@@ -77,3 +77,8 @@ async def session_override(app, connection_test):
 
     app.dependency_overrides[get_db] = db_override_factory
     app.dependency_overrides[get_current_user] = override_get_current_superadmin
+
+    # todo
+    # yield
+    #
+    # app.dependency_overrides.clear()

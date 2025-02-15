@@ -1,5 +1,5 @@
+from app.create_fastapi_app import init_app
 from app.database.models.base import Base
-from create_fastapi_app import init_app
 from uvicorn import run
 
 metadata = Base.metadata

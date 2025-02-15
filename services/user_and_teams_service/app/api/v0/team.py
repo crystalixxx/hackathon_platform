@@ -1,11 +1,10 @@
-from api.dependencies import UOWAlchemyDep
-from core.auth import get_current_user
-from database.schemas.team import TeamCreate, TeamSchema, TeamUpdate, TeamUserSchema
-from database.schemas.user_tag import UserTagSchema
+from app.api.dependencies import UOWAlchemyDep
+from app.core.auth import get_current_user
+from app.database.schemas.team import TeamCreate, TeamSchema, TeamUpdate, TeamUserSchema
+from app.database.schemas.user_tag import UserTagSchema
+from app.services.team import TeamService
 from fastapi import APIRouter, Depends, HTTPException
 from starlette.status import HTTP_409_CONFLICT
-
-from services.team import TeamService
 
 team_router = APIRouter()
 

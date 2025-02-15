@@ -1,8 +1,8 @@
 from contextlib import asynccontextmanager
 
-from api.v0.main import main_v0_router
-from core.config import settings
-from database.session import sessionmanager
+from app.api.v0.main import main_v0_router
+from app.core.config import settings
+from app.database.session import sessionmanager
 from fastapi import FastAPI
 
 

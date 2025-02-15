@@ -1,8 +1,7 @@
-from core.utils.unit_of_work import AbstractUnitOfWork
-from database.schemas.team import TeamCreate, TeamUpdate
+from app.core.utils.unit_of_work import AbstractUnitOfWork
+from app.database.schemas.team import TeamCreate, TeamUpdate
+from app.services.user import UserService
 from fastapi import HTTPException, status
-
-from services.user import UserService
 
 
 class TeamService:

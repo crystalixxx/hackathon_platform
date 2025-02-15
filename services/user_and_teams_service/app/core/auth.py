@@ -1,11 +1,10 @@
+from app.core.config import settings
+from app.core.security import oauth2_scheme
+from app.core.utils.unit_of_work import CachedSQLAlchemyUnitOfWork
+from app.services.user import UserService
 from fastapi import Depends, HTTPException
 from jwt import DecodeError, decode
 from starlette import status
-
-from core.config import settings
-from core.security import oauth2_scheme
-from core.utils.unit_of_work import CachedSQLAlchemyUnitOfWork
-from services.user import UserService
 
 
 async def get_current_user(

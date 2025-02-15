@@ -1,11 +1,10 @@
-from api.dependencies import UOWAlchemyDep
-from core.auth import get_current_user
-from database.schemas.request import RequestCreate, RequestSchema
+from app.api.dependencies import UOWAlchemyDep
+from app.core.auth import get_current_user
+from app.database.schemas.request import RequestCreate, RequestSchema
+from app.services.request import RequestService
+from app.services.team import TeamService
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
-
-from services.request import RequestService
-from services.team import TeamService
 
 request_router = APIRouter()
 

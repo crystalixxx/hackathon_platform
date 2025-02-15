@@ -1,10 +1,9 @@
 import datetime
 
 import jwt
+from app.core.config import settings
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-
-from core.config import settings
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v0/auth/login")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

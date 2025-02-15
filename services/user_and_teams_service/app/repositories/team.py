@@ -1,5 +1,5 @@
-from core.utils.repository import CachedRepository
-from database.models.team import Team
+from app.core.utils.repository import CachedRepository
+from app.database.models.team import Team
 
 
 class TeamRepository(CachedRepository):

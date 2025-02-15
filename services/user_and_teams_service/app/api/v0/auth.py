@@ -1,15 +1,14 @@
 from datetime import timedelta
 from typing import Annotated
 
-from api.dependencies import UOWAlchemyDep
-from core.config import settings
-from core.security import create_access_token
-from database.schemas.user import UserCreate
+from app.api.dependencies import UOWAlchemyDep
+from app.core.config import settings
+from app.core.security import create_access_token
+from app.database.schemas.user import UserCreate
+from app.services.user import UserService
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
-
-from services.user import UserService
 
 auth_router = APIRouter()
 

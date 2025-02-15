@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from core.utils.unit_of_work import (
+from app.core.utils.unit_of_work import (
     AbstractUnitOfWork,
     CachedSQLAlchemyUnitOfWork,
 )

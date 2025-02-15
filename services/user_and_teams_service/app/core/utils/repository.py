@@ -111,7 +111,6 @@ class CachedRepository(AbstractRepository):
 
     async def __generate_hash(self, method_name: str, params: dict) -> str:
         key = f"{self.model.__name__}:{method_name}:{dumps(params, sort_keys=True)}"
-        print(key)
         return sha256(key.encode()).hexdigest()
 
     async def add_one(self, data: dict) -> int:

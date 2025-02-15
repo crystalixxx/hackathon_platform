@@ -1,24 +1,19 @@
 from abc import ABC, abstractmethod
-from threading import Thread
 
 import fakeredis
-from database.redis import RedisSingleton
-from database.session import get_db
-from fakeredis import TcpFakeServer
-from fastapi import Depends
-from repositories import (
+from app.core.utils import SQLAlchemyRepository
+from app.core.utils.cache import RedisCache
+from app.core.utils.repository import AbstractRepository
+from app.database.session import get_db
+from app.repositories import (
     RequestRepository,
     TeamRepository,
     TeamUserRepository,
     UserRepository,
     UserTagRepository,
 )
+from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from core.config import settings
-from core.utils import SQLAlchemyRepository
-from core.utils.cache import RedisCache
-from core.utils.repository import AbstractRepository
 
 
 class AbstractUnitOfWork(ABC):
