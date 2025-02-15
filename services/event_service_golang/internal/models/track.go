@@ -15,6 +15,7 @@ type Track struct {
 	TrackTeams   []TrackTeam   `pg:"rel:has-many"`
 	Participants []TrackRole   `pg:"rel:has-many"`
 	Timelines    []Timeline    `pg:"rel:has-many"`
+	TrackJudges  []TrackJudge  `pg:"many2many:track_judges"`
 	TrackWinners []TrackWinner `pg:"many2many:track_winners"`
 	Statuses     []Status      `pg:"many2many:status_tracks"`
 }
