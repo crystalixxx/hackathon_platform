@@ -8,7 +8,7 @@ import (
 )
 
 type Config struct {
-	env         string `yaml:"env" env-default:"local"`
+	Env         string `yaml:"env" env-default:"local"`
 	HTTPServer  `yaml:"http_server"`
 	SQLDatabase `yaml:"sql_database"`
 }

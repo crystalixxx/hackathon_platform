@@ -1,6 +1,6 @@
 env: "local"
 http_server:
-  address: "event_service:8081"
+  address: "localhost:8081"
   timeout: 10s
   idle_timeout: 60s
 sql_database:
