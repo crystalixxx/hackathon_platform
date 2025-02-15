@@ -62,7 +62,7 @@ services:
     command: redis-server /usr/local/etc/redis/redis.conf
     restart: unless-stopped
     volumes:
-      - redis_data:/data
+      - user_and_teams_redis_data:/data
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     tty: true
     stdin_open: true
@@ -108,7 +108,7 @@ services:
     command: redis-server /usr/local/etc/redis/redis.conf
     restart: unless-stopped
     volumes:
-      - redis_data:/data
+      - event_service_redis_data:/data
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     tty: true
     stdin_open: true
@@ -116,5 +116,6 @@ services:
 volumes:
   user_and_teams_db_data:
   events_service_db_data:
-  redis_data:
+  user_and_teams_redis_data:
+  event_service_redis_data:
   letsencrypt:
