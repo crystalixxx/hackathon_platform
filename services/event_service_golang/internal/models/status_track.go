@@ -1,8 +1,8 @@
 package models
 
 type StatusTrack struct {
-	EventID int    `pg:"event_id,pk"`
-	Event   *Event `pg:"rel:has-one"`
+	TrackID int    `pg:"track_id,pk"`
+	Track   *Track `pg:"rel:has-one"`
 
 	StatusID int     `pg:"status_id,pk"`
 	Status   *Status `pg:"rel:has-one"`
