@@ -18,13 +18,13 @@ func (r *TrackTeamRepository) Create(trackTeam *models.TrackTeam) error {
 	return err
 }
 
-func (r *TrackTeamRepository) GetByTrackID(trackID int) ([]models.TrackTeam, error) {
+func (r *TrackTeamRepository) GetTeamsByTrackID(trackID int) ([]models.TrackTeam, error) {
 	var trackTeams []models.TrackTeam
 	err := r.DB.Model(&trackTeams).Where("track_id = ?", trackID).Select()
 	return trackTeams, err
 }
 
-func (r *TrackTeamRepository) GetByTeamID(teamID int) ([]models.TrackTeam, error) {
+func (r *TrackTeamRepository) GetTracksByTeamID(teamID int) ([]models.TrackTeam, error) {
 	var trackTeams []models.TrackTeam
 	err := r.DB.Model(&trackTeams).Where("team_id = ?", teamID).Select()
 	return trackTeams, err
@@ -41,7 +41,7 @@ func (r *TrackTeamRepository) SetActive(trackID, teamID int, isActive bool) erro
 	return err
 }
 
-func (r *TrackTeamRepository) Delete(trackID, teamID int) error {
+func (r *TrackTeamRepository) DeleteTrackTeam(trackID, teamID int) error {
 	_, err := r.DB.Model(&models.TrackTeam{}).Where("track_id = ?", trackID).Where("team_id = ?", teamID).Delete()
 	return err
 }
