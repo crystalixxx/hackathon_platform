@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type AcceptedTeamActionStatus struct {
+type TeamActionStatus struct {
 	TrackTeamID int        `pg:"track_team_id,pk"`
 	TrackTeam   *TrackTeam `pg:"rel:has-one"`
 

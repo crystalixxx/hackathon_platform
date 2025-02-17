@@ -15,5 +15,5 @@ type Timeline struct {
 	TimelineStatusID int             `pg:"timeline_status_id"`
 	TimeLineStatus   *TimelineStatus `pg:"rel:has-one"`
 
-	TimesActionStatuses []AcceptedTeamActionStatus `pg:"many2many:accepted_team_action_statuses"`
+	TimesActionStatuses []TeamActionStatus `pg:"many2many:accepted_team_action_statuses"`
 }

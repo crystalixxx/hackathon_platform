@@ -8,5 +8,5 @@ type TrackTeam struct {
 	TrackID int    `pg:"track_id"`
 	Track   *Track `pg:"rel:has-one"`
 
-	ActionStatuses []AcceptedTeamActionStatus `pg:"many2many:accepted_team_action_statuses"`
+	ActionStatuses []TeamActionStatus `pg:"many2many:accepted_team_action_statuses"`
 }
