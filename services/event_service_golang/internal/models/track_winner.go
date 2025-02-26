@@ -8,5 +8,5 @@ type TrackWinner struct {
 	TrackTeam   *TrackTeam `pg:"rel:has-one"`
 
 	Place     int  `pg:"place"`
-	IsAwardee bool `pg:"is_awardee"`
+	IsAwardee bool `pg:"is_awardee,notnull"`
 }

@@ -6,6 +6,6 @@ type TrackRole struct {
 
 	UserID int `pg:"user_id,pk"`
 
-	CanViewResults    bool `pg:"can_view_results"`
-	CanViewStatistics bool `pg:"can_view_statistics"`
+	CanViewResults    bool `pg:"can_view_results,notnull"`
+	CanViewStatistics bool `pg:"can_view_statistics,notnull"`
 }

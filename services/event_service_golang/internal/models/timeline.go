@@ -4,10 +4,10 @@ import "time"
 
 type Timeline struct {
 	ID          int       `pg:"id,pk"`
-	Title       string    `pg:"title,type:varchar(255)"`
+	Title       string    `pg:"title,type:varchar(255),notnull"`
 	Description string    `pg:"description"`
 	Deadline    time.Time `pg:"deadline"`
-	IsBlocking  bool      `pg:"is_blocking"`
+	IsBlocking  bool      `pg:"is_blocking,notnull"`
 
 	TrackID int    `pg:"track_id"`
 	Track   *Track `pg:"rel:has-one"`

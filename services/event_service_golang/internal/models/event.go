@@ -4,9 +4,9 @@ import "time"
 
 type Event struct {
 	ID           int       `pg:"id,pk"`
-	Title        string    `pg:"title,type:varchar(255),unique"`
+	Title        string    `pg:"title,type:varchar(255),unique,notnull"`
 	Description  string    `pg:"description"`
-	RedirectLink string    `pg:"redirect_link"`
+	RedirectLink string    `pg:"redirect_link,notnull"`
 	CreatedAt    time.Time `pg:"created_at,default:now()"`
 	UpdatedAt    time.Time `pg:"updated_at"`
 

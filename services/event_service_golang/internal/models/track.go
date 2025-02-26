@@ -2,9 +2,9 @@ package models
 
 type Track struct {
 	ID           int    `pg:"id,pk"`
-	Title        string `pg:"title,type:varchar(255)"`
+	Title        string `pg:"title,type:varchar(255),notnull"`
 	Description  string `pg:"description"`
-	IsScoreBased bool   `pg:"is_score_based"`
+	IsScoreBased bool   `pg:"is_score_based,notnull"`
 
 	EventID int    `pg:"event_id"`
 	Event   *Event `pg:"rel:has-one"`
