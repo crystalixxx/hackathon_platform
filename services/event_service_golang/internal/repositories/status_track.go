@@ -13,25 +13,25 @@ func NewStatusTrackRepository(db *pg.DB) *StatusTrackRepository {
 	return &StatusTrackRepository{DB: db}
 }
 
-func (r *StatusTrackRepository) Create(statusTrack *models.StatusTrack) error {
-	_, err := r.DB.Model(statusTrack).Insert()
+func (r *StatusTrackRepository) Create(tx *pg.Tx, statusTrack *models.StatusTrack) error {
+	_, err := tx.Model(statusTrack).Insert()
 	return err
 }
 
-func (r *StatusTrackRepository) GetAllStatusTracks(StatusId int) ([]*models.StatusTrack, error) {
+func (r *StatusTrackRepository) GetAllStatusTracks(tx *pg.Tx, StatusId int) ([]*models.StatusTrack, error) {
 	statusTracks := make([]*models.StatusTrack, 0)
-	err := r.DB.Model(&statusTracks).Where("status_id = ?", StatusId).Select()
+	err := tx.Model(&statusTracks).Where("status_id = ?", StatusId).Select()
 	return statusTracks, err
 }
 
-func (r *StatusTrackRepository) GetAllTracksStatuses(TrackId int) ([]*models.StatusTrack, error) {
+func (r *StatusTrackRepository) GetAllTracksStatuses(tx *pg.Tx, TrackId int) ([]*models.StatusTrack, error) {
 	statusTracks := make([]*models.StatusTrack, 0)
-	err := r.DB.Model(&statusTracks).Where("track_id = ?", TrackId).Select()
+	err := tx.Model(&statusTracks).Where("track_id = ?", TrackId).Select()
 	return statusTracks, err
 }
 
-func (r *StatusTrackRepository) DeleteStatusTrack(StatusId int, TrackId int) error {
+func (r *StatusTrackRepository) DeleteStatusTrack(tx *pg.Tx, StatusId int, TrackId int) error {
 	statusTrack := &models.StatusTrack{StatusID: StatusId, TrackID: TrackId}
-	_, err := r.DB.Model(statusTrack).WherePK().Delete()
+	_, err := tx.Model(statusTrack).WherePK().Delete()
 	return err
 }

@@ -13,31 +13,31 @@ func NewLocationRepository(db *pg.DB) *LocationRepository {
 	return &LocationRepository{DB: db}
 }
 
-func (r *LocationRepository) Create(location *models.Location) error {
-	_, err := r.DB.Model(location).Insert()
+func (r *LocationRepository) Create(tx *pg.Tx, location *models.Location) error {
+	_, err := tx.Model(location).Insert()
 	return err
 }
 
-func (r *LocationRepository) GetAllLocations() ([]*models.Location, error) {
+func (r *LocationRepository) GetAllLocations(tx *pg.Tx) ([]*models.Location, error) {
 	locations := make([]*models.Location, 0)
-	err := r.DB.Model(&locations).Select()
+	err := tx.Model(&locations).Select()
 	return locations, err
 }
 
-func (r *LocationRepository) GetLocationById(id int) (*models.Location, error) {
+func (r *LocationRepository) GetLocationById(tx *pg.Tx, id int) (*models.Location, error) {
 	location := new(models.Location)
-	err := r.DB.Model(location).Where("id = ?", id).Select()
+	err := tx.Model(location).Where("id = ?", id).Select()
 	return location, err
 }
 
-func (r *LocationRepository) ChangeLocationTitle(id int, title string) (*models.Location, error) {
+func (r *LocationRepository) ChangeLocationTitle(tx *pg.Tx, id int, title string) (*models.Location, error) {
 	location := new(models.Location)
-	_, err := r.DB.Model(location).Set("title = ?", title).Where("id = ?", id).Update()
+	_, err := tx.Model(location).Set("title = ?", title).Where("id = ?", id).Update()
 	return location, err
 }
 
-func (r *LocationRepository) DeleteLocation(id int) error {
+func (r *LocationRepository) DeleteLocation(tx *pg.Tx, id int) error {
 	location := &models.Location{ID: id}
-	_, err := r.DB.Model(location).WherePK().Delete()
+	_, err := tx.Model(location).WherePK().Delete()
 	return err
 }

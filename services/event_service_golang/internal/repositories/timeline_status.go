@@ -13,19 +13,19 @@ func NewTimelineStatusRepository(db *pg.DB) *TimelineStatusRepository {
 	return &TimelineStatusRepository{DB: db}
 }
 
-func (r *TimelineStatusRepository) Create(timelineStatus *models.TimelineStatus) error {
-	_, err := r.DB.Model(timelineStatus).Insert()
+func (r *TimelineStatusRepository) Create(tx *pg.Tx, timelineStatus *models.TimelineStatus) error {
+	_, err := tx.Model(timelineStatus).Insert()
 	return err
 }
 
-func (r *TimelineStatusRepository) GetAllTimelineStatuses() ([]*models.TimelineStatus, error) {
+func (r *TimelineStatusRepository) GetAllTimelineStatuses(tx *pg.Tx) ([]*models.TimelineStatus, error) {
 	timelineStatuses := make([]*models.TimelineStatus, 0)
-	err := r.DB.Model(&timelineStatuses).Select()
+	err := tx.Model(&timelineStatuses).Select()
 	return timelineStatuses, err
 }
 
-func (r *TimelineStatusRepository) DeleteTimelineStatus(ID int) error {
+func (r *TimelineStatusRepository) DeleteTimelineStatus(tx *pg.Tx, ID int) error {
 	timelineStatus := &models.TimelineStatus{ID: ID}
-	_, err := r.DB.Model(timelineStatus).WherePK().Delete()
+	_, err := tx.Model(timelineStatus).WherePK().Delete()
 	return err
 }

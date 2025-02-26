@@ -13,25 +13,25 @@ func NewTrackJudgeRepository(db *pg.DB) *TrackJudgeRepository {
 	return &TrackJudgeRepository{DB: db}
 }
 
-func (r *TrackJudgeRepository) Create(trackJudge *models.TrackJudge) error {
-	_, err := r.DB.Model(trackJudge).Insert()
+func (r *TrackJudgeRepository) Create(tx *pg.Tx, trackJudge *models.TrackJudge) error {
+	_, err := tx.Model(trackJudge).Insert()
 	return err
 }
 
-func (r *TrackJudgeRepository) GetAllTrackJudges(TrackId int) ([]*models.TrackJudge, error) {
+func (r *TrackJudgeRepository) GetAllTrackJudges(tx *pg.Tx, TrackId int) ([]*models.TrackJudge, error) {
 	trackJudges := make([]*models.TrackJudge, 0)
-	err := r.DB.Model(&trackJudges).Where("track_id = ?", TrackId).Select()
+	err := tx.Model(&trackJudges).Where("track_id = ?", TrackId).Select()
 	return trackJudges, err
 }
 
-func (r *TrackJudgeRepository) GetAllJudgesTracks(JudgeID int) ([]*models.TrackJudge, error) {
+func (r *TrackJudgeRepository) GetAllJudgesTracks(tx *pg.Tx, JudgeID int) ([]*models.TrackJudge, error) {
 	trackJudges := make([]*models.TrackJudge, 0)
-	err := r.DB.Model(&trackJudges).Where("judge_id = ?", JudgeID).Select()
+	err := tx.Model(&trackJudges).Where("judge_id = ?", JudgeID).Select()
 	return trackJudges, err
 }
 
-func (r *TrackJudgeRepository) DeleteTrackJudge(TrackId int, JudgeID int) error {
+func (r *TrackJudgeRepository) DeleteTrackJudge(tx *pg.Tx, TrackId int, JudgeID int) error {
 	trackJudge := &models.TrackJudge{TrackID: TrackId, JudgeID: JudgeID}
-	_, err := r.DB.Model(trackJudge).WherePK().Delete()
+	_, err := tx.Model(trackJudge).WherePK().Delete()
 	return err
 }

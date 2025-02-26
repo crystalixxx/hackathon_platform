@@ -13,37 +13,37 @@ func NewStatusRepository(db *pg.DB) *StatusRepository {
 	return &StatusRepository{DB: db}
 }
 
-func (r *StatusRepository) Create(status *models.Status) error {
-	_, err := r.DB.Model(status).Insert()
+func (r *StatusRepository) Create(tx *pg.Tx, status *models.Status) error {
+	_, err := tx.Model(status).Insert()
 	return err
 }
 
-func (r *StatusRepository) GetAllStatuses() ([]*models.Status, error) {
+func (r *StatusRepository) GetAllStatuses(tx *pg.Tx) ([]*models.Status, error) {
 	statuses := make([]*models.Status, 0)
-	err := r.DB.Model(&statuses).Select()
+	err := tx.Model(&statuses).Select()
 	return statuses, err
 }
 
-func (r *StatusRepository) GetStatusById(id int) (*models.Status, error) {
+func (r *StatusRepository) GetStatusById(tx *pg.Tx, id int) (*models.Status, error) {
 	status := new(models.Status)
-	err := r.DB.Model(status).Where("id = ?", id).Select()
+	err := tx.Model(status).Where("id = ?", id).Select()
 	return status, err
 }
 
-func (r *StatusRepository) ChangeStatusTitle(id int, title string) (*models.Status, error) {
+func (r *StatusRepository) ChangeStatusTitle(tx *pg.Tx, id int, title string) (*models.Status, error) {
 	status := new(models.Status)
-	_, err := r.DB.Model(status).Set("title = ?", title).Where("id = ?", id).Update()
+	_, err := tx.Model(status).Set("title = ?", title).Where("id = ?", id).Update()
 	return status, err
 }
 
-func (r *StatusRepository) ChangeStatusDescription(id int, description string) (*models.Status, error) {
+func (r *StatusRepository) ChangeStatusDescription(tx *pg.Tx, id int, description string) (*models.Status, error) {
 	status := new(models.Status)
-	_, err := r.DB.Model(status).Set("description = ?", description).Where("id = ?", id).Update()
+	_, err := tx.Model(status).Set("description = ?", description).Where("id = ?", id).Update()
 	return status, err
 }
 
-func (r *StatusRepository) DeleteStatus(id int) error {
+func (r *StatusRepository) DeleteStatus(tx *pg.Tx, id int) error {
 	status := &models.Status{ID: id}
-	_, err := r.DB.Model(status).WherePK().Delete()
+	_, err := tx.Model(status).WherePK().Delete()
 	return err
 }

@@ -13,49 +13,49 @@ func NewTrackWinnerRepository(db *pg.DB) *TrackWinnerRepository {
 	return &TrackWinnerRepository{DB: db}
 }
 
-func (r *TrackWinnerRepository) Create(trackWinner *models.TrackWinner) error {
-	_, err := r.DB.Model(trackWinner).Insert()
+func (r *TrackWinnerRepository) Create(tx *pg.Tx, trackWinner *models.TrackWinner) error {
+	_, err := tx.Model(trackWinner).Insert()
 	return err
 }
 
-func (r *TrackWinnerRepository) GetAllTrackWinners() ([]*models.TrackWinner, error) {
+func (r *TrackWinnerRepository) GetAllTrackWinners(tx *pg.Tx) ([]*models.TrackWinner, error) {
 	trackWinners := make([]*models.TrackWinner, 0)
-	err := r.DB.Model(&trackWinners).Select()
+	err := tx.Model(&trackWinners).Select()
 	return trackWinners, err
 }
 
-func (r *TrackWinnerRepository) GetAllWinnersByTrackID(trackID int) ([]*models.TrackWinner, error) {
+func (r *TrackWinnerRepository) GetAllWinnersByTrackID(tx *pg.Tx, trackID int) ([]*models.TrackWinner, error) {
 	trackWinners := make([]*models.TrackWinner, 0)
-	err := r.DB.Model(&trackWinners).Where("track_id = ?", trackID).Select()
+	err := tx.Model(&trackWinners).Where("track_id = ?", trackID).Select()
 	return trackWinners, err
 }
 
-func (r *TrackWinnerRepository) GetAllTracksByTeamID(teamID int) ([]*models.TrackWinner, error) {
+func (r *TrackWinnerRepository) GetAllTracksByTeamID(tx *pg.Tx, teamID int) ([]*models.TrackWinner, error) {
 	trackWinners := make([]*models.TrackWinner, 0)
-	err := r.DB.Model(&trackWinners).Where("track_team_id = ?", teamID).Select()
+	err := tx.Model(&trackWinners).Where("track_team_id = ?", teamID).Select()
 	return trackWinners, err
 }
 
-func (r *TrackWinnerRepository) GetTrackWinnerByTrackIDAndTeamID(trackID, teamID int) (*models.TrackWinner, error) {
+func (r *TrackWinnerRepository) GetTrackWinnerByTrackIDAndTeamID(tx *pg.Tx, trackID, teamID int) (*models.TrackWinner, error) {
 	trackWinner := new(models.TrackWinner)
-	err := r.DB.Model(trackWinner).Where("track_id = ?", trackID).Where("track_team_id = ?", teamID).Select()
+	err := tx.Model(trackWinner).Where("track_id = ?", trackID).Where("track_team_id = ?", teamID).Select()
 	return trackWinner, err
 }
 
-func (r *TrackWinnerRepository) UpdateTrackWinnerPlace(trackID, teamID, place int) (*models.TrackWinner, error) {
+func (r *TrackWinnerRepository) UpdateTrackWinnerPlace(tx *pg.Tx, trackID, teamID, place int) (*models.TrackWinner, error) {
 	trackWinner := new(models.TrackWinner)
-	_, err := r.DB.Model(trackWinner).Set("place = ?", place).Where("track_id = ?", trackID).Where("track_team_id = ?", teamID).Update()
+	_, err := tx.Model(trackWinner).Set("place = ?", place).Where("track_id = ?", trackID).Where("track_team_id = ?", teamID).Update()
 	return trackWinner, err
 }
 
-func (r *TrackWinnerRepository) UpdateTrackWinnerAwardee(trackID, teamID int, isAwardee bool) (*models.TrackWinner, error) {
+func (r *TrackWinnerRepository) UpdateTrackWinnerAwardee(tx *pg.Tx, trackID, teamID int, isAwardee bool) (*models.TrackWinner, error) {
 	trackWinner := new(models.TrackWinner)
-	_, err := r.DB.Model(trackWinner).Set("is_awardee = ?", isAwardee).Where("track_id = ?", trackID).Where("track_team_id = ?", teamID).Update()
+	_, err := tx.Model(trackWinner).Set("is_awardee = ?", isAwardee).Where("track_id = ?", trackID).Where("track_team_id = ?", teamID).Update()
 	return trackWinner, err
 }
 
-func (r *TrackWinnerRepository) DeleteTrackWinner(trackID, teamID int) error {
+func (r *TrackWinnerRepository) DeleteTrackWinner(tx *pg.Tx, trackID, teamID int) error {
 	trackWinner := new(models.TrackWinner)
-	_, err := r.DB.Model(trackWinner).Where("track_id = ?", trackID).Where("track_team_id = ?", teamID).Delete()
+	_, err := tx.Model(trackWinner).Where("track_id = ?", trackID).Where("track_team_id = ?", teamID).Delete()
 	return err
 }

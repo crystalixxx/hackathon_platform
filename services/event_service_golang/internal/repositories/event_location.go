@@ -13,25 +13,25 @@ func NewEventLocationRepository(db *pg.DB) *EventLocationRepository {
 	return &EventLocationRepository{DB: db}
 }
 
-func (r *EventLocationRepository) Create(eventLocation *models.EventLocation) error {
-	_, err := r.DB.Model(eventLocation).Insert()
+func (r *EventLocationRepository) Create(tx *pg.Tx, eventLocation *models.EventLocation) error {
+	_, err := tx.Model(eventLocation).Insert()
 	return err
 }
 
-func (r *EventLocationRepository) GetAllEventsLocations(EventId int) ([]*models.EventLocation, error) {
+func (r *EventLocationRepository) GetAllEventsLocations(tx *pg.Tx, EventId int) ([]*models.EventLocation, error) {
 	eventLocations := make([]*models.EventLocation, 0)
-	err := r.DB.Model(&eventLocations).Where("event_id = ?", EventId).Select()
+	err := tx.Model(&eventLocations).Where("event_id = ?", EventId).Select()
 	return eventLocations, err
 }
 
-func (r *EventLocationRepository) GetAllLocationsEvents(LocationId int) ([]*models.EventLocation, error) {
+func (r *EventLocationRepository) GetAllLocationsEvents(tx *pg.Tx, LocationId int) ([]*models.EventLocation, error) {
 	eventLocations := make([]*models.EventLocation, 0)
-	err := r.DB.Model(&eventLocations).Where("location_id = ?", LocationId).Select()
+	err := tx.Model(&eventLocations).Where("location_id = ?", LocationId).Select()
 	return eventLocations, err
 }
 
-func (r *EventLocationRepository) DeleteEventLocation(EventId int, LocationId int) error {
+func (r *EventLocationRepository) DeleteEventLocation(tx *pg.Tx, EventId int, LocationId int) error {
 	eventLocation := &models.EventLocation{EventID: EventId, LocationID: LocationId}
-	_, err := r.DB.Model(eventLocation).WherePK().Delete()
+	_, err := tx.Model(eventLocation).WherePK().Delete()
 	return err
 }
