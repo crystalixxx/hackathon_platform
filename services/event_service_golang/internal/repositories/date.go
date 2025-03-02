@@ -14,9 +14,9 @@ func NewDateRepository(db *pg.DB) *DateRepository {
 	return &DateRepository{DB: db}
 }
 
-func (r *DateRepository) Create(tx *pg.Tx, date *models.Date) error {
+func (r *DateRepository) Create(tx *pg.Tx, date *models.Date) (*models.Date, error) {
 	_, err := tx.Model(date).Insert()
-	return err
+	return date, err
 }
 
 func (r *DateRepository) GetAllDates(tx *pg.Tx) ([]*models.Date, error) {
