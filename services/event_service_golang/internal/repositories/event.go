@@ -14,9 +14,9 @@ func NewEventRepository(db *pg.DB) *EventRepository {
 	return &EventRepository{DB: db}
 }
 
-func (r *EventRepository) Create(tx *pg.Tx, event *models.Event) error {
+func (r *EventRepository) Create(tx *pg.Tx, event *models.Event) (*models.Event, error) {
 	_, err := tx.Model(event).Insert()
-	return err
+	return event, err
 }
 
 func (r *EventRepository) GetAllEvents(tx *pg.Tx) ([]*models.Event, error) {
