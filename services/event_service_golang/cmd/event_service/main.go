@@ -1,10 +1,14 @@
 package main
 
 import (
+	_ "event_service/cmd/event_service/docs"
 	"event_service/internal/config"
+	"event_service/internal/repositories"
+	"event_service/internal/routes/rest"
+	"event_service/internal/service"
 	"fmt"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-pg/pg/v10"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"log/slog"
 	"net/http"
 	"os"
@@ -25,17 +29,21 @@ func main() {
 	logger.Info("Starting event-service", slog.String("env", cfg.Env))
 	logger.Debug("debug messages are enabled")
 
-	router := chi.NewRouter()
+	db := pg.Connect(&pg.Options{
+		Addr: cfg.SQLDatabase.Url,
+	})
 
-	router.Use(middleware.RequestID)
-	router.Use(middleware.Recoverer)
-	router.Use(middleware.URLFormat)
+	dateRepository := repositories.NewDateRepository(db)
+	dateService := service.NewDateService(dateRepository, db)
+	handler := rest.New(logger, dateService)
+
+	handler.Get("/swagger/*", httpSwagger.WrapHandler)
 
 	logger.Info("starting server", slog.String("address", cfg.Address))
 
 	server := &http.Server{
 		Addr:         cfg.Address,
-		Handler:      router,
+		Handler:      handler,
 		ReadTimeout:  cfg.HTTPServer.Timeout,
 		WriteTimeout: cfg.HTTPServer.Timeout,
 		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
