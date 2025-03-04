@@ -5,7 +5,6 @@ import (
 	"event_service/internal/repositories"
 	"event_service/internal/schemas"
 	"github.com/go-pg/pg/v10"
-	"time"
 )
 
 type DateService struct {
@@ -69,12 +68,9 @@ func (s *DateService) CreateDate(date schemas.Date) (*models.Date, error) {
 		err = tx.Commit()
 	}()
 
-	timeDateStart, _ := time.Parse(date.DateStart, time.RFC3339)
-	timeDateEnd, _ := time.Parse(date.DateEnd, time.RFC3339)
-
 	model := models.Date{
-		DateStart: timeDateStart,
-		DateEnd:   timeDateEnd,
+		DateStart: date.DateStart,
+		DateEnd:   date.DateEnd,
 	}
 
 	return s.repo.Create(tx, &model)
@@ -95,15 +91,12 @@ func (s *DateService) UpdateDate(id int, date schemas.Date) (*models.Date, error
 		err = tx.Commit()
 	}()
 
-	timeDateStart, _ := time.Parse(date.DateStart, time.RFC3339)
-	timeDateEnd, _ := time.Parse(date.DateEnd, time.RFC3339)
-
-	_, err = s.repo.ChangeDateStart(tx, id, timeDateStart)
+	_, err = s.repo.ChangeDateStart(tx, id, date.DateStart)
 	if err != nil {
 		return nil, err
 	}
 
-	model, err := s.repo.ChangeDateEnd(tx, id, timeDateEnd)
+	model, err := s.repo.ChangeDateEnd(tx, id, date.DateEnd)
 	if err != nil {
 		return nil, err
 	}
