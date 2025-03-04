@@ -7,5 +7,11 @@ CREATE TABLE event_prize
     icon_url      TEXT         NOT NULL,
     event_id      INT          NOT NULL REFERENCES event (id),
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TRIGGER trigger_update_event_prize_updated_at
+    BEFORE UPDATE
+    ON event_prize
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();

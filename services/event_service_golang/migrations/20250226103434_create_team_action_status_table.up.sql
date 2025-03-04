@@ -6,5 +6,5 @@ CREATE TABLE team_action_status
     resolution_link TEXT,
     notes           TEXT,
     competed_at     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (track_team_id, timeline_id),
+    PRIMARY KEY (track_team_id, timeline_id)
 );

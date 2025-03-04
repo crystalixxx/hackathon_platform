@@ -6,5 +6,5 @@ CREATE TABLE timeline
     deadline           TIMESTAMP,
     is_blocking        BOOLEAN      NOT NULL DEFAULT FALSE,
     track_id           INT          NOT NULL REFERENCES track (id),
-    timeline_status_id INT          NOT NULL REFERENCES timeline_status (id),
+    timeline_status_id INT          NOT NULL REFERENCES timeline_status (id)
 );

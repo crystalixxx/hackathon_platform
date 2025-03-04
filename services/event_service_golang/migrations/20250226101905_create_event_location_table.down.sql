@@ -1,1 +1,1 @@
-DROP TABLE event_location;
+DROP TABLE IF EXISTS event_location;
