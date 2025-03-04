@@ -14,13 +14,16 @@ type Config struct {
 }
 
 type HTTPServer struct {
-	Address     string        `yaml:"address" env-default:"event_service:8081"`
+	Address     string        `yaml:"address" env-default:"localhost:8081"`
 	Timeout     time.Duration `yaml:"timeout" env-default:"10s"`
 	IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"60s"`
 }
 
 type SQLDatabase struct {
-	Url         string `yaml:"url" env-default:"postgresql://admin:admin@user_and_teams_service_postgresql:5432/postgres"`
+	Addr        string `yaml:"addr" env-default:"postgres:5432"`
+	User        string `yaml:"user" env-default:"admin"`
+	Password    string `yaml:"password" env-default:"admin"`
+	Database    string `yaml:"database" env-default:"postgres"`
 	Echo        bool   `yaml:"echo" env-default:"false"`
 	EchoPool    bool   `yaml:"echo_pool" env-default:"false"`
 	PoolSize    int    `yaml:"pool_size" env-default:"50"`

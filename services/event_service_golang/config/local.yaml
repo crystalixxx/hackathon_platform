@@ -1,11 +1,15 @@
 env: "local"
 http_server:
-  address: "localhost:8081"
+  address: ":8081"
   timeout: 10s
   idle_timeout: 60s
 sql_database:
-  url: "postgresql://admin:admin@user_and_teams_service_postgresql:5432/postgres"
+  addr: "postgres:5432"
+  user: "admin"
+  password: "admin"
+  database: "postgres"
   echo: false
   echo_pool: false
   pool_size: 50
   max_overflow: 10
+
