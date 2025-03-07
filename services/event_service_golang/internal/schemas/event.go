@@ -1,7 +1,6 @@
 package schemas
 
 type Event struct {
-	ID           int    `json:"id" validate:"required" example:"1"`
 	Title        string `json:"title" validate:"required" example:"Event title"`
 	Description  string `json:"description" validate:"required" example:"Event description"`
 	RedirectLink string `json:"redirect_link" validate:"required" example:"http://example.com"`
