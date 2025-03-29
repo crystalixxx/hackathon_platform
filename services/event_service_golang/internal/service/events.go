@@ -5,7 +5,6 @@ import (
 	"event_service/internal/repositories"
 	"event_service/internal/schemas"
 	"github.com/go-pg/pg/v10"
-	"time"
 )
 
 type EventService struct {
@@ -85,15 +84,10 @@ func (s *EventService) CreateEvent(event schemas.Event) (_ *models.Event, err er
 		_ = tx.Commit()
 	}()
 
-	timeStart, _ := time.Parse(event.CreatedAt, time.RFC3339)
-	timeEnd, _ := time.Parse(event.UpdatedAt, time.RFC3339)
-
 	model := &models.Event{
 		Title:        event.Title,
 		Description:  event.Description,
 		RedirectLink: event.RedirectLink,
-		CreatedAt:    timeStart,
-		UpdatedAt:    timeEnd,
 		DateID:       event.DateId,
 		Status:       event.Status,
 	}

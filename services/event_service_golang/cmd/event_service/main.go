@@ -47,9 +47,14 @@ func main() {
 	eventService := service.NewEventsService(eventRepository, db)
 	eventHandler := rest.NewEvent(logger, eventService)
 
+	statusRepository := repositories.NewStatusRepository(db)
+	statusService := service.NewStatusService(statusRepository, db)
+	statusHandler := rest.NewStatus(logger, statusService)
+
 	router := chi.NewRouter()
 	router.Mount("/events", eventHandler)
 	router.Mount("/dates", dateHandler)
+	router.Mount("/statuses", statusHandler)
 
 	logger.Info("starting server", slog.String("address", cfg.Address))
 
@@ -71,6 +76,7 @@ func main() {
 func InitM2M() {
 	orm.RegisterTable((*models.EventLocation)(nil))
 	orm.RegisterTable((*models.StatusEvent)(nil))
+	orm.RegisterTable((*models.StatusTrack)(nil))
 	orm.RegisterTable((*models.EventPrize)(nil))
 	orm.RegisterTable((*models.TeamActionStatus)(nil))
 }
