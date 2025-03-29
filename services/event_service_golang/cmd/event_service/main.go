@@ -1,14 +1,15 @@
 package main
 
 import (
-	_ "event_service/cmd/event_service/docs"
 	"event_service/internal/config"
+	"event_service/internal/models"
 	"event_service/internal/repositories"
 	"event_service/internal/routes/rest"
 	"event_service/internal/service"
 	"fmt"
+	"github.com/go-chi/chi/v5"
 	"github.com/go-pg/pg/v10"
-	httpSwagger "github.com/swaggo/http-swagger"
+	"github.com/go-pg/pg/v10/orm"
 	"log/slog"
 	"net/http"
 	"os"
@@ -30,20 +31,31 @@ func main() {
 	logger.Debug("debug messages are enabled")
 
 	db := pg.Connect(&pg.Options{
-		Addr: cfg.SQLDatabase.Url,
+		Addr:     cfg.SQLDatabase.Addr,
+		User:     cfg.SQLDatabase.User,
+		Password: cfg.SQLDatabase.Password,
+		Database: cfg.SQLDatabase.Database,
 	})
+
+	InitM2M()
 
 	dateRepository := repositories.NewDateRepository(db)
 	dateService := service.NewDateService(dateRepository, db)
-	handler := rest.New(logger, dateService)
+	dateHandler := rest.NewDate(logger, dateService)
 
-	handler.Get("/swagger/*", httpSwagger.WrapHandler)
+	eventRepository := repositories.NewEventRepository(db)
+	eventService := service.NewEventsService(eventRepository, db)
+	eventHandler := rest.NewEvent(logger, eventService)
+
+	router := chi.NewRouter()
+	router.Mount("/events", eventHandler)
+	router.Mount("/dates", dateHandler)
 
 	logger.Info("starting server", slog.String("address", cfg.Address))
 
 	server := &http.Server{
 		Addr:         cfg.Address,
-		Handler:      handler,
+		Handler:      router,
 		ReadTimeout:  cfg.HTTPServer.Timeout,
 		WriteTimeout: cfg.HTTPServer.Timeout,
 		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
@@ -54,6 +66,13 @@ func main() {
 	}
 
 	logger.Error("server stopped")
+}
+
+func InitM2M() {
+	orm.RegisterTable((*models.EventLocation)(nil))
+	orm.RegisterTable((*models.StatusEvent)(nil))
+	orm.RegisterTable((*models.EventPrize)(nil))
+	orm.RegisterTable((*models.TeamActionStatus)(nil))
 }
 
 func setupLogger(env string) *slog.Logger {

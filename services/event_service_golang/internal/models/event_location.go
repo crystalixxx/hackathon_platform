@@ -1,6 +1,7 @@
 package models
 
 type EventLocation struct {
+	tableName  struct{}  `pg:"event_location"`
 	LocationID int       `pg:"location_id,pk"`
 	Location   *Location `pg:"rel:has-one"`
 

@@ -27,7 +27,7 @@ func (s *EventService) GetAllEvents() (_ []*models.Event, err error) {
 	}
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return
 		}
 
@@ -37,21 +37,37 @@ func (s *EventService) GetAllEvents() (_ []*models.Event, err error) {
 	return s.repo.GetAllEvents(tx)
 }
 
-func (s *EventService) GetEventByID(id int) (_ *models.Event, err error) {
+func (s *EventService) GetEventByID(eventId int) (_ *models.Event, err error) {
 	tx, err := s.db.Begin()
 	if err != nil {
 		return nil, err
 	}
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return
 		}
 
 		err = tx.Commit()
 	}()
 
-	return s.repo.GetEventByID(tx, id)
+	return s.repo.GetEventByID(tx, eventId)
+}
+
+func (s *EventService) GetEventByStatus(status string) (_ []*models.Event, err error) {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+		}
+
+		err = tx.Commit()
+	}()
+
+	return s.repo.GetEventByStatus(tx, status)
 }
 
 func (s *EventService) CreateEvent(event schemas.Event) (_ *models.Event, err error) {
@@ -62,11 +78,11 @@ func (s *EventService) CreateEvent(event schemas.Event) (_ *models.Event, err er
 
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return
 		}
 
-		tx.Commit()
+		_ = tx.Commit()
 	}()
 
 	timeStart, _ := time.Parse(event.CreatedAt, time.RFC3339)
@@ -79,12 +95,13 @@ func (s *EventService) CreateEvent(event schemas.Event) (_ *models.Event, err er
 		CreatedAt:    timeStart,
 		UpdatedAt:    timeEnd,
 		DateID:       event.DateId,
+		Status:       event.Status,
 	}
 
 	return s.repo.Create(tx, model)
 }
 
-func (s *EventService) UpdateEventTitle(id int, title string) (_ *models.Event, err error) {
+func (s *EventService) UpdateEvent(eventId int, newEvent schemas.EventUpdate) (_ *models.Event, err error) {
 	tx, err := s.db.Begin()
 	if err != nil {
 		return nil, err
@@ -92,65 +109,57 @@ func (s *EventService) UpdateEventTitle(id int, title string) (_ *models.Event, 
 
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return
 		}
 
-		tx.Commit()
+		_ = tx.Commit()
 	}()
 
-	return s.repo.UpdateEventTitle(tx, id, title)
+	event, err := s.GetEventByID(eventId)
+	if err != nil {
+		return nil, err
+	}
+
+	if newEvent.Title != "" {
+		event.Title = newEvent.Title
+	}
+
+	if newEvent.Description != "" {
+		event.Description = newEvent.Description
+	}
+
+	if newEvent.RedirectLink != "" {
+		event.RedirectLink = newEvent.RedirectLink
+	}
+
+	if newEvent.DateId != 0 {
+		event.DateID = newEvent.DateId
+	}
+
+	if newEvent.Status != "" {
+		event.Status = newEvent.Status
+	}
+
+	return s.repo.UpdateEvent(tx, eventId, event)
 }
 
-func (s *EventService) UpdateEventDescription(eventID int, description string) (_ *models.Event, err error) {
+func (s *EventService) DeleteEvent(eventID int) (err error) {
 	tx, err := s.db.Begin()
 	if err != nil {
-		return nil, err
+		return err
 	}
+
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return
 		}
 
-		tx.Commit()
+		_ = tx.Commit()
 	}()
 
-	return s.repo.UpdateEventDescription(tx, eventID, description)
-}
-
-func (s *EventService) UpdateRedirectLink(eventID int, redirectLink string) (_ *models.Event, err error) {
-	tx, err := s.db.Begin()
-	if err != nil {
-		return nil, err
-	}
-	defer func() {
-		if err != nil {
-			tx.Rollback()
-			return
-		}
-
-		tx.Commit()
-	}()
-
-	return s.repo.UpdateRedirectLink(tx, eventID, redirectLink)
-}
-
-func (s *EventService) UpdateDateID(eventID int, dateID int) (_ *models.Event, err error) {
-	tx, err := s.db.Begin()
-	if err != nil {
-		return nil, err
-	}
-	defer func() {
-		if err != nil {
-			tx.Rollback()
-			return
-		}
-
-		tx.Commit()
-	}()
-
-	return s.repo.UpdateDateID(tx, eventID, dateID)
+	return s.repo.DeleteEvent(tx, eventID)
 }
 
 func (s *EventService) StartEvent(eventID int) (_ *models.Event, err error) {

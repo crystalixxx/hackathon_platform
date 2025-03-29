@@ -7,7 +7,6 @@ import (
 	"event_service/internal/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
 	"log/slog"
 	"net/http"
@@ -22,7 +21,7 @@ type DateService interface {
 	DeleteDate(id int) error
 }
 
-func New(log *slog.Logger, service *service.DateService) *chi.Mux {
+func NewDate(log *slog.Logger, service *service.DateService) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -32,7 +31,7 @@ func New(log *slog.Logger, service *service.DateService) *chi.Mux {
 
 	validate := validator.New()
 
-	r.Route("/dates", func(r chi.Router) {
+	r.Route("/", func(r chi.Router) {
 		r.Get("/", getAllDatesHandler(log, service))
 		r.Post("/", createDateHandler(log, service, validate))
 
@@ -40,15 +39,6 @@ func New(log *slog.Logger, service *service.DateService) *chi.Mux {
 			r.Get("/", getDateByIDHandler(log, service))
 			r.Put("/", updateDateHandler(log, service, validate))
 			r.Delete("/", deleteDateHandler(log, service))
-		})
-	})
-
-	r.Route("/health", func(r chi.Router) {
-		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusOK)
-			render.JSON(w, r, http.Response{
-				Status: strconv.Itoa(http.StatusOK),
-			})
 		})
 	})
 

@@ -26,7 +26,7 @@ func (s *DateService) GetAllDates() ([]*models.Date, error) {
 	}
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return
 		}
 
@@ -43,7 +43,7 @@ func (s *DateService) GetDateByID(id int) (*models.Date, error) {
 	}
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return
 		}
 
@@ -61,7 +61,7 @@ func (s *DateService) CreateDate(date schemas.Date) (*models.Date, error) {
 
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return
 		}
 
@@ -84,7 +84,7 @@ func (s *DateService) UpdateDate(id int, date schemas.Date) (*models.Date, error
 
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return
 		}
 
@@ -112,7 +112,7 @@ func (s *DateService) DeleteDate(id int) error {
 
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return
 		}
 

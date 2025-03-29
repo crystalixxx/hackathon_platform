@@ -3,6 +3,7 @@ package models
 import "time"
 
 type TeamActionStatus struct {
+	tableName   struct{}   `pg:"team_action_status"`
 	TrackTeamID int        `pg:"track_team_id,pk"`
 	TrackTeam   *TrackTeam `pg:"rel:has-one"`
 

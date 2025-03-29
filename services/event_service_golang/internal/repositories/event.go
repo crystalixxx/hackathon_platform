@@ -37,27 +37,16 @@ func (r *EventRepository) GetEventByID(tx *pg.Tx, eventID int) (*models.Event, e
 	return event, err
 }
 
-func (r *EventRepository) UpdateEventTitle(tx *pg.Tx, eventID int, title string) (*models.Event, error) {
-	event := new(models.Event)
-	_, err := tx.Model(event).Set("title = ?", title).Where("id = ?", eventID).Update()
-	return event, err
+func (r *EventRepository) GetEventByStatus(tx *pg.Tx, status string) ([]*models.Event, error) {
+	events := make([]*models.Event, 0)
+	err := tx.Model(&events).Where("status = ?", status).Select()
+	return events, err
 }
 
-func (r *EventRepository) UpdateEventDescription(tx *pg.Tx, eventID int, description string) (*models.Event, error) {
+func (r *EventRepository) UpdateEvent(tx *pg.Tx, eventId int, newEvent *models.Event) (*models.Event, error) {
 	event := new(models.Event)
-	_, err := tx.Model(event).Set("description = ?", description).Where("id = ?", eventID).Update()
-	return event, err
-}
-
-func (r *EventRepository) UpdateRedirectLink(tx *pg.Tx, eventID int, redirectLink string) (*models.Event, error) {
-	event := new(models.Event)
-	_, err := tx.Model(event).Set("redirect_link = ?", redirectLink).Where("id = ?", eventID).Update()
-	return event, err
-}
-
-func (r *EventRepository) UpdateDateID(tx *pg.Tx, eventID int, dateID int) (*models.Event, error) {
-	event := new(models.Event)
-	_, err := tx.Model(event).Set("date_id = ?", dateID).Where("id = ?", eventID).Update()
+	_, err := tx.Model(event).Set("title = ?, description = ?, redirect_link = ?, date_id = ?, status = ?", newEvent.Title,
+		newEvent.Description, newEvent.RedirectLink, newEvent.DateID, newEvent.Status).Where("id = ?", eventId).Returning("*").Update()
 	return event, err
 }
 
