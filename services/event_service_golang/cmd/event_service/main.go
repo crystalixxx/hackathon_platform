@@ -39,22 +39,11 @@ func main() {
 
 	InitM2M()
 
-	dateRepository := repositories.NewDateRepository(db)
-	dateService := service.NewDateService(dateRepository, db)
-	dateHandler := rest.NewDate(logger, dateService)
-
-	eventRepository := repositories.NewEventRepository(db)
-	eventService := service.NewEventsService(eventRepository, db)
-	eventHandler := rest.NewEvent(logger, eventService)
-
-	statusRepository := repositories.NewStatusRepository(db)
-	statusService := service.NewStatusService(statusRepository, db)
-	statusHandler := rest.NewStatus(logger, statusService)
-
 	router := chi.NewRouter()
-	router.Mount("/events", eventHandler)
-	router.Mount("/dates", dateHandler)
-	router.Mount("/statuses", statusHandler)
+	router.Mount("/event", createEventHandler(db, logger))
+	router.Mount("/date", createDateHandler(db, logger))
+	router.Mount("/status", createStatusHandler(db, logger))
+	router.Mount("/location", createLocationHandler(db, logger))
 
 	logger.Info("starting server", slog.String("address", cfg.Address))
 
@@ -100,4 +89,32 @@ func setupLogger(env string) *slog.Logger {
 	}
 
 	return log
+}
+
+func createDateHandler(db *pg.DB, logger *slog.Logger) *chi.Mux {
+	dateRepository := repositories.NewDateRepository(db)
+	dateService := service.NewDateService(dateRepository, db)
+
+	return rest.NewDate(logger, dateService)
+}
+
+func createEventHandler(db *pg.DB, logger *slog.Logger) *chi.Mux {
+	eventRepository := repositories.NewEventRepository(db)
+	eventService := service.NewEventsService(eventRepository, db)
+
+	return rest.NewEvent(logger, eventService)
+}
+
+func createStatusHandler(db *pg.DB, logger *slog.Logger) *chi.Mux {
+	statusRepository := repositories.NewStatusRepository(db)
+	statusService := service.NewStatusService(statusRepository, db)
+
+	return rest.NewStatus(logger, statusService)
+}
+
+func createLocationHandler(db *pg.DB, logger *slog.Logger) *chi.Mux {
+	locationRepository := repositories.NewLocationRepository(db)
+	locationService := service.NewLocationService(locationRepository, db)
+
+	return rest.NewLocation(logger, locationService)
 }
