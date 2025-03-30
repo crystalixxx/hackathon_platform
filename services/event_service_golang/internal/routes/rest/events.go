@@ -99,7 +99,7 @@ func getEventByIDHandler(log *slog.Logger, service EventService) http.HandlerFun
 		)
 
 		eventId, err := strconv.Atoi(chi.URLParam(r, "id"))
-		date, err := service.GetEventByID(eventId)
+		event, err := service.GetEventByID(eventId)
 		if err != nil {
 			log.Error("Failed to get event:", err.Error())
 
@@ -108,7 +108,7 @@ func getEventByIDHandler(log *slog.Logger, service EventService) http.HandlerFun
 		}
 
 		w.WriteHeader(http.StatusOK)
-		if err := json.NewEncoder(w).Encode(date); err != nil {
+		if err := json.NewEncoder(w).Encode(event); err != nil {
 			log.Error("Failed to encode response:", err.Error())
 
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
@@ -127,15 +127,15 @@ func createEventHandler(log *slog.Logger, service EventService, validate *valida
 			slog.String("request_it", middleware.GetReqID(r.Context())),
 		)
 
-		var date schemas.Event
-		if err := decodeAndValidate(r, &date, validate); err != nil {
+		var event schemas.Event
+		if err := decodeAndValidate(r, &event, validate); err != nil {
 			log.Error("Failed to decode request:", err.Error())
 
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		resp, err := service.CreateEvent(date)
+		resp, err := service.CreateEvent(event)
 		if err != nil {
 			log.Error("Failed to create event:", err.Error())
 
@@ -201,11 +201,11 @@ func deleteEventHandler(log *slog.Logger, service EventService) http.HandlerFunc
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
 
-		dateId, err := strconv.Atoi(chi.URLParam(r, "id"))
-		err = service.DeleteEvent(dateId)
+		trackId, err := strconv.Atoi(chi.URLParam(r, "id"))
+		err = service.DeleteEvent(trackId)
 
 		if err != nil {
-			log.Error("Failed to delete date:", err.Error())
+			log.Error("Failed to delete event:", err.Error())
 
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

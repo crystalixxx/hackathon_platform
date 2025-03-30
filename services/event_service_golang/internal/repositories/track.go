@@ -14,9 +14,9 @@ func NewTrackRepository(db *pg.DB) *TrackRepository {
 	return &TrackRepository{DB: db}
 }
 
-func (r *TrackRepository) Create(tx *pg.Tx, track *models.Track) error {
+func (r *TrackRepository) Create(tx *pg.Tx, track *models.Track) (*models.Track, error) {
 	_, err := tx.Model(track).Insert()
-	return err
+	return track, err
 }
 
 func (r *TrackRepository) GetAllTracks(tx *pg.Tx) ([]*models.Track, error) {
@@ -49,33 +49,10 @@ func (r *TrackRepository) GetTracksWithAllRelations(tx *pg.Tx) ([]*models.Track,
 	return tracks, err
 }
 
-func (r *TrackRepository) UpdateTrackTitle(tx *pg.Tx, trackID int, title string) (*models.Track, error) {
+func (r *TrackRepository) UpdateTrack(tx *pg.Tx, trackId int, newTrack *models.Track) (*models.Track, error) {
 	track := new(models.Track)
-	_, err := tx.Model(track).Set("title = ?", title).Where("id = ?", trackID).Update()
-	return track, err
-}
-
-func (r *TrackRepository) UpdateTrackDescription(tx *pg.Tx, trackID int, description string) (*models.Track, error) {
-	track := new(models.Track)
-	_, err := tx.Model(track).Set("description = ?", description).Where("id = ?", trackID).Update()
-	return track, err
-}
-
-func (r *TrackRepository) UpdateEventID(tx *pg.Tx, trackID int, eventID int) (*models.Track, error) {
-	track := new(models.Track)
-	_, err := tx.Model(track).Set("event_id = ?", eventID).Where("id = ?", trackID).Update()
-	return track, err
-}
-
-func (r *TrackRepository) UpdateIsScoreBased(tx *pg.Tx, trackID int, isScoreBased bool) (*models.Track, error) {
-	track := new(models.Track)
-	_, err := tx.Model(track).Set("is_score_based = ?", isScoreBased).Where("id = ?", trackID).Update()
-	return track, err
-}
-
-func (r *TrackRepository) UpdateDateID(tx *pg.Tx, trackID int, dateID int) (*models.Track, error) {
-	track := new(models.Track)
-	_, err := tx.Model(track).Set("date_id = ?", dateID).Where("id = ?", trackID).Update()
+	_, err := tx.Model(track).Set("title = ?, description = ?, event_id = ?, is_score_based = ?, date_id = ?",
+		newTrack.Title, newTrack.Description, newTrack.EventID, newTrack.IsScoreBased, newTrack.DateID).Where("id = ?", trackId).Returning("*").Update()
 	return track, err
 }
 

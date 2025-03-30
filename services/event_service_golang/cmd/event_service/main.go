@@ -44,6 +44,7 @@ func main() {
 	router.Mount("/date", createDateHandler(db, logger))
 	router.Mount("/status", createStatusHandler(db, logger))
 	router.Mount("/location", createLocationHandler(db, logger))
+	router.Mount("/track", createTrackHandler(db, logger))
 
 	logger.Info("starting server", slog.String("address", cfg.Address))
 
@@ -68,6 +69,8 @@ func InitM2M() {
 	orm.RegisterTable((*models.StatusTrack)(nil))
 	orm.RegisterTable((*models.EventPrize)(nil))
 	orm.RegisterTable((*models.TeamActionStatus)(nil))
+	orm.RegisterTable((*models.TrackJudge)(nil))
+	orm.RegisterTable((*models.TrackWinner)(nil))
 }
 
 func setupLogger(env string) *slog.Logger {
@@ -118,4 +121,11 @@ func createLocationHandler(db *pg.DB, logger *slog.Logger) *chi.Mux {
 	locationService := service.NewLocationService(locationRepository, db)
 
 	return rest.NewLocation(logger, locationService)
+}
+
+func createTrackHandler(db *pg.DB, logger *slog.Logger) *chi.Mux {
+	trackRepository := repositories.NewTrackRepository(db)
+	trackService := service.NewTrackService(trackRepository, db)
+
+	return rest.NewTrack(logger, trackService)
 }
