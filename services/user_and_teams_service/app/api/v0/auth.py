@@ -1,15 +1,14 @@
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordRequestForm
-from starlette import status
-
 from app.api.dependencies import UOWAlchemyDep
-from app.core.config import config
+from app.core.config import settings
 from app.core.security import create_access_token
 from app.database.schemas.user import UserCreate
 from app.services.user import UserService
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+from starlette import status
 
 auth_router = APIRouter()
 
@@ -20,7 +19,9 @@ async def sign_up(uow: UOWAlchemyDep, user: UserCreate):
     new_user = await UserService().sign_up_new_user(uow, user)
     new_user = await UserService().get_user_by_id(uow, new_user)
 
-    access_token_expires = timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(
+        minutes=settings.security.access_token_expires_minutes
+    )
 
     access_token = create_access_token(
         data={"sub": new_user.email, "permissions": "user"},
@@ -45,7 +46,9 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token_expires = timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(
+        minutes=settings.security.access_token_expires_minutes
+    )
 
     access_token = create_access_token(
         data={"sub": form_data.username, "permissions": "user"},

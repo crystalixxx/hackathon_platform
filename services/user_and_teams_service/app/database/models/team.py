@@ -1,10 +1,9 @@
 from typing import List, Optional
 
+from app.database.schemas.team import TeamSchema, TeamUserSchema
 from pydantic import AnyUrl
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, relationship
-
-from app.database.schemas.team import TeamSchema, TeamUserSchema
 
 from . import base, user
 
@@ -43,7 +42,7 @@ class Team(base.BaseModel):
         return TeamSchema
 
 
-class TeamTag(base.BaseModel):
+class TeamTag(base.ManyToManyBase):
     __tablename__ = "t_team_tag"
 
     team_id: int = Column(

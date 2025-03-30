@@ -2,14 +2,24 @@ services:
   traefik:
     image: traefik:v2.4
     command:
-      - "--api.insecure=true"
+      - "--api.insecure=false"
       - "--providers.docker=true"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=midrugov@edu.hse.ru"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
-      - "8080:8080"
+      - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./letsencrypt:/letsencrypt"
+    labels:
+      - "traefik.http.routers.api.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.api.service=api@internal"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=myresolver"
 
   user_and_teams_service:
     build:
@@ -23,18 +33,6 @@ services:
       - ./.docker/.ipython:/root/.ipython:cached
     environment:
       PYTHONPATH: /app
-      SECURITY_KEY: "709cb22f047a59f492c4d6407e627240e2272bda11ab791c16fb4f4661f7285a95ba6efbc1bbf762cddcc3710a1487f4a3242f21b2d9cd751b3154a452c5a286"
-      ALGORITHM: "HS256"
-      ACCESS_TOKEN_EXPIRE_MINUTES: 30
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_HOST: user_and_teams_service_postgresql
-      POSTGRES_PORT: 5432
-      POSTGRES_NAME: postgres
-      REDIS_HOST: user_and_teams_service_redis
-      REDIS_PORT: 6379
-      REDIS_USER: admin
-      REDIS_PASSWORD: admin
     labels:
       - "traefik.http.routers.user_and_teams_service.rule=Host(`user_and_teams_service.localhost`)"
       - "traefik.http.services.user_and_teams_service.loadbalancer.server.port=8000"
@@ -51,7 +49,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db-data:/var/lib/postgresql/data:cached
+      - user_and_teams_db_data:/var/lib/postgresql/data:cached
 
   user_and_teams_service_redis:
     image: redis:latest
@@ -64,11 +62,60 @@ services:
     command: redis-server /usr/local/etc/redis/redis.conf
     restart: unless-stopped
     volumes:
-      - redis_data:/data
+      - user_and_teams_redis_data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    tty: true
+    stdin_open: true
+
+  events_service:
+    build:
+      context: services/event_service
+      dockerfile: Dockerfile
+    command: python app/main.py
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./services/event_service:/app/:cached
+      - ./.docker/.ipython:/root/.ipython:cached
+    environment:
+      PYTHONPATH: /app
+    labels:
+      - "traefik.http.routers.events_service.rule=Host(`events_service.localhost`)"
+      - "traefik.http.services.events_service.loadbalancer.server.port=8000"
+    depends_on:
+      - "events_service_postgresql"
+      - "events_service_redis"
+
+  events_service_postgresql:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5434:5432"
+    volumes:
+      - events_service_db_data:/var/lib/postgresql/data:cached
+
+  events_service_redis:
+    image: redis:latest
+    environment:
+      REDIS_PASSWORD: "admin"
+      REDIS_USER: "admin"
+      REDIS_USER_PASSWORD: "admin"
+    ports:
+      - "6380:6379"
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: unless-stopped
+    volumes:
+      - event_service_redis_data:/data
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     tty: true
     stdin_open: true
 
 volumes:
-  db-data:
-  redis_data:
+  user_and_teams_db_data:
+  events_service_db_data:
+  user_and_teams_redis_data:
+  event_service_redis_data:
+  letsencrypt:

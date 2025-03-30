@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "event-service"
+version = "0.1.0"
+description = ""
+authors = ["Maxim Drugov <midrugov@edu.hse.ru>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = {extras = ["all"], version = "^0.115.6"}
+ruff = "^0.8.4"
+redis = "^5.2.1"
+pre-commit = "^4.1.0"
+sqlalchemy = "^2.0.37"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
