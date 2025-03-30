@@ -21,7 +21,7 @@ func (r *EventRepository) Create(tx *pg.Tx, event *models.Event) (*models.Event,
 
 func (r *EventRepository) GetAllEvents(tx *pg.Tx) ([]*models.Event, error) {
 	events := make([]*models.Event, 0)
-	err := tx.Model(&events).Relation("Date").Select()
+	err := tx.Model(&events).Relation("Date").Relation("Statuses").Select()
 	return events, err
 }
 

@@ -99,9 +99,10 @@ func createDateHandler(db *pg.DB, logger *slog.Logger) *chi.Mux {
 }
 
 func createEventHandler(db *pg.DB, logger *slog.Logger) *chi.Mux {
+	statusEventRepository := repositories.NewStatusEventRepository(db)
 	eventRepository := repositories.NewEventRepository(db)
-	eventService := service.NewEventsService(eventRepository, db)
 
+	eventService := service.NewEventsService(eventRepository, statusEventRepository, db)
 	return rest.NewEvent(logger, eventService)
 }
 

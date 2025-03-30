@@ -8,14 +8,16 @@ import (
 )
 
 type EventService struct {
-	repo *repositories.EventRepository
-	db   *pg.DB
+	repo            *repositories.EventRepository
+	statusEventRepo *repositories.StatusEventRepository
+	db              *pg.DB
 }
 
-func NewEventsService(repo *repositories.EventRepository, db *pg.DB) *EventService {
+func NewEventsService(repo *repositories.EventRepository, statusEventRepo *repositories.StatusEventRepository, db *pg.DB) *EventService {
 	return &EventService{
-		repo: repo,
-		db:   db,
+		repo:            repo,
+		statusEventRepo: statusEventRepo,
+		db:              db,
 	}
 }
 
@@ -164,4 +166,63 @@ func (s *EventService) StartEvent(eventID int) (_ *models.Event, err error) {
 func (s *EventService) EndEvent(eventID int) (_ *models.Event, err error) {
 	// TODO: implement this method
 	return nil, nil
+}
+
+func (s *EventService) GetAllEventStatuses(eventID int) (_ []*models.Status, err error) {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+			return
+		}
+
+		_ = tx.Commit()
+	}()
+
+	return s.statusEventRepo.GetAllEventsStatuses(tx, eventID)
+}
+
+func (s *EventService) AddStatusToEvent(statusEventSchema *schemas.StatusEvent) (_ *models.StatusEvent, err error) {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+			return
+		}
+
+		_ = tx.Commit()
+	}()
+
+	statusEventModel := &models.StatusEvent{
+		EventID:  statusEventSchema.EventID,
+		StatusID: statusEventSchema.StatusID,
+	}
+
+	return s.statusEventRepo.Create(tx, statusEventModel)
+}
+
+func (s *EventService) RemoveStatusFromEvent(statusEventSchema *schemas.StatusEvent) (err error) {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+			return
+		}
+
+		_ = tx.Commit()
+	}()
+
+	return s.statusEventRepo.DeleteStatusEvent(tx, statusEventSchema.StatusID, statusEventSchema.EventID)
 }
