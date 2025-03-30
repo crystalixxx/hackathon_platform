@@ -5,6 +5,7 @@ import (
 	"event_service/internal/models"
 	"event_service/internal/schemas"
 	"event_service/internal/service"
+	"event_service/pkg/http/utils"
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -26,6 +27,9 @@ type EventService interface {
 	GetAllEventStatuses(eventID int) ([]*models.Status, error)
 	AddStatusToEvent(statusEventSchema *schemas.StatusEvent) (*models.StatusEvent, error)
 	RemoveStatusFromEvent(statusEventSchema *schemas.StatusEvent) error
+	GetAllEventLocations(eventId int) ([]*models.Location, error)
+	AddLocationToEvent(locationEventSchema *schemas.EventLocation) (*models.EventLocation, error)
+	RemoveLocationFromEvent(statusEventSchema *schemas.EventLocation) error
 }
 
 func NewEvent(log *slog.Logger, service *service.EventService) *chi.Mux {
@@ -48,6 +52,15 @@ func NewEvent(log *slog.Logger, service *service.EventService) *chi.Mux {
 			r.Route("/{id}", func(r chi.Router) {
 				r.Get("/", getAllEventStatusesHandler(log, service))
 				r.Delete("/", removeStatusFromEventHandler(log, service))
+			})
+		})
+
+		r.Route("/location", func(r chi.Router) {
+			r.Post("/", addLocationToEventHandler(log, service))
+
+			r.Route("/{id}", func(r chi.Router) {
+				r.Get("/", getAllEventLocationsHandler(log, service))
+				r.Delete("/", removeLocationsFromEventHandler(log, service))
 			})
 		})
 
@@ -255,40 +268,22 @@ func addStatusToEventHandler(log *slog.Logger, service EventService) http.Handle
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
 
-		requiredHeaders := []string{
-			"EventId",
-			"StatusId",
+		headersList := map[string]string{
+			"EventId":  "int",
+			"StatusId": "int",
 		}
 
-		for _, key := range requiredHeaders {
-			actualKey := r.Header.Get(key)
-			if actualKey == "" {
-				log.Error("Invalid request header")
-
-				http.Error(w, fmt.Sprintf("Invalid headers, check API schema"), http.StatusBadRequest)
-				return
-			}
-		}
-
-		eventId, err := strconv.Atoi(r.Header.Get("EventId"))
+		convertedHeaders, err := utils.ValidateHeaders(headersList, log, r)
 		if err != nil {
-			log.Error("Invalid format of EventId:", err.Error())
+			log.Error("Failed to validate headers:", err.Error())
 
-			http.Error(w, fmt.Sprintf("Invalid format of EventId header, expected number, got %s", r.Header.Get("EventId")), http.StatusBadRequest)
-			return
-		}
-
-		statusId, err := strconv.Atoi(r.Header.Get("StatusId"))
-		if err != nil {
-			log.Error("Invalid format of StatusId:", err.Error())
-
-			http.Error(w, fmt.Sprintf("Invalid format of StatusId header, expected number, got %s", r.Header.Get("StatusId")), http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
 		newStatus, err := service.AddStatusToEvent(&schemas.StatusEvent{
-			StatusID: statusId,
-			EventID:  eventId,
+			StatusID: convertedHeaders["StatusId"].(int),
+			EventID:  convertedHeaders["StatusId"].(int),
 		})
 
 		if err != nil {
@@ -311,7 +306,7 @@ func addStatusToEventHandler(log *slog.Logger, service EventService) http.Handle
 
 func removeStatusFromEventHandler(log *slog.Logger, service EventService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "rest.Event.statusCreate"
+		const op = "rest.Event.statusDelete"
 
 		log := log.With(
 			slog.String("op", op),
@@ -332,7 +327,7 @@ func removeStatusFromEventHandler(log *slog.Logger, service EventService) http.H
 		if err != nil {
 			log.Error("Invalid format of status_id:", err.Error())
 
-			http.Error(w, fmt.Sprintf("Invalid format of status_id header, expected number, got %s", queryParams.Get("status_id")), http.StatusBadRequest)
+			http.Error(w, fmt.Sprintf("Invalid format of status_id query, expected number, got %s", queryParams.Get("status_id")), http.StatusBadRequest)
 			return
 		}
 
@@ -350,5 +345,124 @@ func removeStatusFromEventHandler(log *slog.Logger, service EventService) http.H
 
 		w.WriteHeader(http.StatusOK)
 		log.Info("Status deleted from event successfully")
+	}
+}
+
+func getAllEventLocationsHandler(log *slog.Logger, service EventService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const op = "rest.Event.locationGet"
+
+		log := log.With(
+			slog.String("op", op),
+			slog.String("request_id", middleware.GetReqID(r.Context())),
+		)
+
+		locationId, err := strconv.Atoi(chi.URLParam(r, "id"))
+		locations, err := service.GetAllEventLocations(locationId)
+
+		if err != nil {
+			log.Error("Failed to get locations by event:", err.Error())
+
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(locations); err != nil {
+			log.Error("Failed to encode response:", err.Error())
+
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		}
+
+		log.Info("Locations by event fetched successfully")
+	}
+}
+
+func addLocationToEventHandler(log *slog.Logger, service EventService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const op = "rest.Event.addLocation"
+
+		log := log.With(
+			slog.String("op", op),
+			slog.String("request_id", middleware.GetReqID(r.Context())),
+		)
+
+		headersList := map[string]string{
+			"EventId":    "int",
+			"LocationId": "int",
+		}
+
+		convertedHeaders, err := utils.ValidateHeaders(headersList, log, r)
+		if err != nil {
+			log.Error("Failed to validate headers:", err.Error())
+
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		newLocation, err := service.AddLocationToEvent(&schemas.EventLocation{
+			LocationID: convertedHeaders["LocationId"].(int),
+			EventID:    convertedHeaders["EventId"].(int),
+		})
+
+		if err != nil {
+			log.Error("Failed to add location to event:", err.Error())
+
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(newLocation); err != nil {
+			log.Error("Failed to encode response:", err.Error())
+
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		}
+
+		log.Info("Location added to event successfully")
+	}
+}
+
+func removeLocationsFromEventHandler(log *slog.Logger, service EventService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const op = "rest.Event.removeLocation"
+
+		log := log.With(
+			slog.String("op", op),
+			slog.String("request_id", middleware.GetReqID(r.Context())),
+		)
+
+		queryParams := r.URL.Query()
+
+		if queryParams.Get("location_id") == "" {
+			log.Error("Missing 'location_id' in query")
+
+			http.Error(w, "Missing 'location_id' in query", http.StatusBadRequest)
+			return
+		}
+
+		eventId, err := strconv.Atoi(chi.URLParam(r, "id"))
+		locationId, err := strconv.Atoi(queryParams.Get("location_id"))
+		if err != nil {
+			log.Error("Invalid format of location_id:", err.Error())
+
+			http.Error(w, fmt.Sprintf("Invalid format of location_id query, expected number, got %s", queryParams.Get("status_id")), http.StatusBadRequest)
+			return
+		}
+
+		err = service.RemoveLocationFromEvent(&schemas.EventLocation{
+			EventID:    eventId,
+			LocationID: locationId,
+		})
+
+		if err != nil {
+			log.Error("Failed to remove location from event:", err.Error())
+
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		log.Info("Location deleted from event successfully")
 	}
 }

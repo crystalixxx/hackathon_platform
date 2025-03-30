@@ -8,9 +8,10 @@ import (
 )
 
 type EventService struct {
-	repo            *repositories.EventRepository
-	statusEventRepo *repositories.StatusEventRepository
-	db              *pg.DB
+	repo              *repositories.EventRepository
+	statusEventRepo   *repositories.StatusEventRepository
+	locationEventRepo *repositories.EventLocationRepository
+	db                *pg.DB
 }
 
 func NewEventsService(repo *repositories.EventRepository, statusEventRepo *repositories.StatusEventRepository, db *pg.DB) *EventService {
@@ -225,4 +226,63 @@ func (s *EventService) RemoveStatusFromEvent(statusEventSchema *schemas.StatusEv
 	}()
 
 	return s.statusEventRepo.DeleteStatusEvent(tx, statusEventSchema.StatusID, statusEventSchema.EventID)
+}
+
+func (s *EventService) GetAllEventLocations(eventId int) (_ []*models.Location, err error) {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+			return
+		}
+
+		_ = tx.Commit()
+	}()
+
+	return s.locationEventRepo.GetAllEventsLocations(tx, eventId)
+}
+
+func (s *EventService) AddLocationToEvent(locationEventSchema *schemas.EventLocation) (_ *models.EventLocation, err error) {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+			return
+		}
+
+		_ = tx.Commit()
+	}()
+
+	locationEventModel := &models.EventLocation{
+		EventID:    locationEventSchema.EventID,
+		LocationID: locationEventSchema.LocationID,
+	}
+
+	return s.locationEventRepo.Create(tx, locationEventModel)
+}
+
+func (s *EventService) RemoveLocationFromEvent(statusEventSchema *schemas.EventLocation) (err error) {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+			return
+		}
+
+		_ = tx.Commit()
+	}()
+
+	return s.locationEventRepo.DeleteEventLocation(tx, statusEventSchema.EventID, statusEventSchema.LocationID)
 }
