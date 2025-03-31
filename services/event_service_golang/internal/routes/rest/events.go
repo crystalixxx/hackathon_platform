@@ -283,7 +283,7 @@ func addStatusToEventHandler(log *slog.Logger, service EventService) http.Handle
 
 		newStatus, err := service.AddStatusToEvent(&schemas.StatusEvent{
 			StatusID: convertedHeaders["StatusId"].(int),
-			EventID:  convertedHeaders["StatusId"].(int),
+			EventID:  convertedHeaders["EventId"].(int),
 		})
 
 		if err != nil {

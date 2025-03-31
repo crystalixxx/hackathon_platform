@@ -10,8 +10,10 @@ import (
 )
 
 type TrackService struct {
-	repo *repositories.TrackRepository
-	db   *pg.DB
+	repo              *repositories.TrackRepository
+	statusTrackRepo   *repositories.StatusTrackRepository
+	locationTrackRepo *repositories.LocationTrackRepository
+	db                *pg.DB
 }
 
 func NewTrackService(repo *repositories.TrackRepository, db *pg.DB) *TrackService {
@@ -147,4 +149,122 @@ func (s *TrackService) DeleteTrack(trackId int) error {
 	}()
 
 	return s.repo.DeleteTrack(tx, trackId)
+}
+
+func (s *TrackService) GetAllTrackLocations(trackId int) (_ []*models.Location, err error) {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+			return
+		}
+
+		_ = tx.Commit()
+	}()
+
+	return s.locationTrackRepo.GetAllTracksLocations(tx, trackId)
+}
+
+func (s *TrackService) AddLocationToTrack(locationTrackSchema *schemas.LocationTrack) (_ *models.LocationTrack, err error) {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+			return
+		}
+
+		_ = tx.Commit()
+	}()
+
+	statusEventModel := &models.LocationTrack{
+		TrackId:    locationTrackSchema.TrackId,
+		LocationId: locationTrackSchema.LocationId,
+	}
+
+	return s.locationTrackRepo.Create(tx, statusEventModel)
+}
+
+func (s *TrackService) RemoveLocationFromTrack(locationTrackSchema *schemas.LocationTrack) (err error) {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+			return
+		}
+
+		_ = tx.Commit()
+	}()
+
+	return s.locationTrackRepo.DeleteTrackLocation(tx, locationTrackSchema.TrackId, locationTrackSchema.LocationId)
+}
+
+func (s *TrackService) GetAllTrackStatuses(trackId int) (_ []*models.Status, err error) {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+			return
+		}
+
+		_ = tx.Commit()
+	}()
+
+	return s.statusTrackRepo.GetAllStatusTracks(tx, trackId)
+}
+
+func (s *TrackService) AddStatusToTrack(statusTrackSchema *schemas.StatusTrack) (_ *models.StatusTrack, err error) {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+			return
+		}
+
+		_ = tx.Commit()
+	}()
+
+	statusTrackModel := &models.StatusTrack{
+		TrackID:  statusTrackSchema.TrackID,
+		StatusID: statusTrackSchema.StatusID,
+	}
+
+	return s.statusTrackRepo.Create(tx, statusTrackModel)
+}
+
+func (s *TrackService) RemoveStatusFromTrack(statusTrackSchema *schemas.StatusTrack) (err error) {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+			return
+		}
+
+		_ = tx.Commit()
+	}()
+
+	return s.statusTrackRepo.DeleteStatusTrack(tx, statusTrackSchema.StatusID, statusTrackSchema.StatusID)
 }
