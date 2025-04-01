@@ -13,21 +13,31 @@ func NewStatusTrackRepository(db *pg.DB) *StatusTrackRepository {
 	return &StatusTrackRepository{DB: db}
 }
 
-func (r *StatusTrackRepository) Create(tx *pg.Tx, statusTrack *models.StatusTrack) error {
+func (r *StatusTrackRepository) Create(tx *pg.Tx, statusTrack *models.StatusTrack) (*models.StatusTrack, error) {
 	_, err := tx.Model(statusTrack).Insert()
-	return err
+	return statusTrack, err
 }
 
-func (r *StatusTrackRepository) GetAllStatusTracks(tx *pg.Tx, StatusId int) ([]*models.StatusTrack, error) {
-	statusTracks := make([]*models.StatusTrack, 0)
-	err := tx.Model(&statusTracks).Where("status_id = ?", StatusId).Select()
-	return statusTracks, err
+func (r *StatusTrackRepository) GetAllStatusTracks(tx *pg.Tx, StatusId int) ([]*models.Status, error) {
+	tracks := make([]*models.Status, 0)
+
+	err := tx.Model(&tracks).
+		Join("JOIN status_track se ON se.track_id = track.id").
+		Where("se.status_id = ?", StatusId).
+		Select()
+
+	return tracks, err
 }
 
-func (r *StatusTrackRepository) GetAllTracksStatuses(tx *pg.Tx, TrackId int) ([]*models.StatusTrack, error) {
-	statusTracks := make([]*models.StatusTrack, 0)
-	err := tx.Model(&statusTracks).Where("track_id = ?", TrackId).Select()
-	return statusTracks, err
+func (r *StatusTrackRepository) GetAllTracksStatuses(tx *pg.Tx, TrackId int) ([]*models.Status, error) {
+	statuses := make([]*models.Status, 0)
+
+	err := tx.Model(&statuses).
+		Join("JOIN status_track se ON se.status_id = status.id").
+		Where("se.track_id = ?", TrackId).
+		Select()
+
+	return statuses, err
 }
 
 func (r *StatusTrackRepository) DeleteStatusTrack(tx *pg.Tx, StatusId int, TrackId int) error {

@@ -19,4 +19,5 @@ type Track struct {
 	TrackJudges  []TrackJudge  `pg:"many2many:track_judge"`
 	TrackWinners []TrackWinner `pg:"many2many:track_winner"`
 	Statuses     []Status      `pg:"many2many:status_track"`
+	Locations    []Location    `pg:"many2many:location_track"`
 }
