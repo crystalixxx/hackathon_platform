@@ -7,7 +7,7 @@ def test_create_user(client, connection_test):
         "email": "test@gmail.com",
         "first_name": "Oleg",
         "second_name": "Hello",
-        "password": "HUUUUUY",
+        "password": "123456789isnotagoodpassword",
         "role": "User",
     }
     response = client.post("/api/v0/user/")
